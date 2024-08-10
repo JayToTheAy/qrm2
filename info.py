@@ -8,7 +8,11 @@ SPDX-License-Identifier: LiLiQ-Rplus-1.1
 
 
 authors = ("@classabbyamp", "@0x5c.io")
-description = """A bot with various useful ham radio-related functions, written in Python."""
+description = """
+    A bot with various useful ham radio-related functions, written in Python.
+
+    qrm is a <:miaowware_irl:678275824436379678> MiaowWare project.
+    """
 license = "Québec Free and Open-Source Licence – Strong Reciprocity (LiLiQ-R+), version 1.1"
 contributing = """Check out the [source on GitHub](https://github.com/miaowware/qrm2). Contributions are welcome!
 
