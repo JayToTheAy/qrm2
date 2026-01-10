@@ -7,7 +7,7 @@ SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
 
-from datetime import datetime
+from datetime import datetime, timezone
 from io import BytesIO
 
 import cairosvg
@@ -26,7 +26,7 @@ class PropagationCog(commands.Cog):
     fof2_url = "https://prop.kc2g.com/renders/current/fof2-normal-now.svg"
     gl_baseurl = "https://www.fourmilab.ch/cgi-bin/uncgi/Earth?img=ETOPO1_day-m.evif&dynimg=y&opt=-p"
     n0nbh_sun_url = "https://www.hamqsl.com/solarsun.php"
-    noaa_drap_url = "https://services.swpc.noaa.gov/images/animations/d-rap/global/d-rap/latest.png"
+    noaa_drap_url = "https://services.swpc.noaa.gov/images/animations/d-rap/global/latest.png"
 
     def __init__(self, bot):
         self.bot = bot
@@ -72,8 +72,9 @@ class PropagationCog(commands.Cog):
         embed = cmn.embed_factory_slash(ctx)
         embed.title = "Current Greyline Conditions"
         embed.colour = cmn.colours.good
-        date_params = f"&date=1&utc={datetime.utcnow():%Y-%m-%d+%H:%M:%S}"
+        date_params = f"&date=1&utc={datetime.now(timezone.utc):%Y-%m-%d+%H:%M:%S}"
         embed.set_image(url=self.gl_baseurl + date_params)
+        print(self.gl_baseurl + date_params) # debug print
         await ctx.send_response(embed=embed)
 
     @commands.slash_command(name="solarweather", category=cmn.Cats.WEATHER, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
