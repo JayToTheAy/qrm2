@@ -24,8 +24,8 @@ class MorseCog(commands.Cog):
             self.morse: dict[str, str] = d["morse"]
             self.ascii: dict[str, str] = d["ascii"]
 
-    @commands.slash_command(name="morse", category=cmn.Cats.CODES)
-    async def _morse(self, ctx: std_commands.context.ApplicationContext, msg: str, integration_types={IntegrationType.guild_install, IntegrationType.user_install}):
+    @commands.slash_command(name="morse", category=cmn.Cats.CODES, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    async def _morse(self, ctx: std_commands.context.ApplicationContext, msg: str):
         """Converts ASCII to international morse code."""
         result = ""
         for char in msg.upper():
