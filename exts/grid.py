@@ -24,7 +24,7 @@ class GridCog(commands.Cog):
     async def _grid_sq_lookup(self, ctx: std_commands.context.ApplicationContext, lat: float, lon: float):
         ("""Calculates the grid square for latitude and longitude coordinates."""
          """\n\nCoordinates should be in decimal format, with negative being latitude South and longitude West."""
-         """\n\nTo calculate the latitude and longitude from a grid locator, use `latlong`""")
+         """\n\nTo calculate the latitude and longitude from a grid locator, use `/latlong`""")
         latlong = gridtools.LatLong(lat, lon)
         grid = gridtools.Grid(latlong)
 
@@ -34,11 +34,10 @@ class GridCog(commands.Cog):
         embed.colour = cmn.colours.good
         await ctx.send_response(embed=embed)
 
-    @commands.command(name="latlong", category=cmn.Cats.CALC,  integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    @commands.slash_command(name="latlong", category=cmn.Cats.CALC,  integration_types={IntegrationType.guild_install, IntegrationType.user_install})
     async def _location_lookup(self, ctx: std_commands.context.ApplicationContext, grid: str):
         ("""Calculates the latitude and longitude for the center of a grid locator."""
-         """\n\nTo calculate the grid locator from a latitude and longitude, use `grid`"""
-         """\n\n*Warning: `ungrid` will be removed soon. Use one of the other names for this command.*""")
+         """\n\nTo calculate the grid locator from a latitude and longitude, use `/grid`""")
         grid_obj = gridtools.Grid(grid)
 
         embed = cmn.embed_factory_slash(ctx)
@@ -47,7 +46,7 @@ class GridCog(commands.Cog):
         embed.description = f"**{grid_obj.lat:.5f}, {grid_obj.long:.5f}**"
         await ctx.send_response(embed=embed)
 
-    @commands.command(name="griddistance", category=cmn.Cats.CALC, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    @commands.slash_command(name="griddistance", category=cmn.Cats.CALC, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
     async def _dist_lookup(self, ctx: std_commands.context.ApplicationContext, grid1: str, grid2: str):
         """Calculates the great circle distance and azimuthal bearing between two grid locators."""
         g1 = gridtools.Grid(grid1)
