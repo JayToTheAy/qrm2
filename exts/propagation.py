@@ -35,36 +35,38 @@ class PropagationCog(commands.Cog):
     @commands.slash_command(name="muf", category=cmn.Cats.WEATHER, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
     async def mufmap(self, ctx: std_commands.context.ApplicationContext):
         """Shows a world map of the Maximum Usable Frequency (MUF)."""
-        async with ctx.typing():
-            resp = await self.httpx_client.get(self.muf_url)
-            await resp.aclose()
-            if resp.status_code != 200:
-                raise cmn.BotHTTPError(resp)
-            out = BytesIO(cairosvg.svg2png(bytestring=await resp.aread()))
-            file = discord.File(out, "muf_map.png")
-            embed = cmn.embed_factory_slash(ctx)
-            embed.title = "Maximum Usable Frequency Map"
-            embed.description = "Image from [prop.kc2g.com](https://prop.kc2g.com/)\nData sources listed on the page."
-            embed.set_image(url="attachment://muf_map.png")
-            await ctx.send_response(file=file, embed=embed)
+        await ctx.defer()
 
-    @commands.command(name="fof2", category=cmn.Cats.WEATHER, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+        resp = await self.httpx_client.get(self.muf_url)
+        await resp.aclose()
+        if resp.status_code != 200:
+            raise cmn.BotHTTPError(resp)
+        out = BytesIO(cairosvg.svg2png(bytestring=await resp.aread())) # type: ignore # TODO: fix
+        file = discord.File(out, "muf_map.png")
+        embed = cmn.embed_factory_slash(ctx)
+        embed.title = "Maximum Usable Frequency Map"
+        embed.description = "Image from [prop.kc2g.com](https://prop.kc2g.com/)\nData sources listed on the page."
+        embed.set_image(url="attachment://muf_map.png")
+        await ctx.send_followup(file=file, embed=embed)
+
+    @commands.slash_command(name="fof2", category=cmn.Cats.WEATHER, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
     async def fof2map(self, ctx: std_commands.context.ApplicationContext):
         """Shows a world map of the Critical Frequency (foF2)."""
-        async with ctx.typing():
-            resp = await self.httpx_client.get(self.fof2_url)
-            await resp.aclose()
-            if resp.status_code != 200:
-                raise cmn.BotHTTPError(resp)
-            out = BytesIO(cairosvg.svg2png(bytestring=await resp.aread()))
-            file = discord.File(out, "fof2_map.png")
-            embed = cmn.embed_factory_slash(ctx)
-            embed.title = "Critical Frequency (foF2) Map"
-            embed.description = "Image from [prop.kc2g.com](https://prop.kc2g.com/)\nData sources listed on the page."
-            embed.set_image(url="attachment://fof2_map.png")
-            await ctx.send_response(file=file, embed=embed)
+        await ctx.defer()
 
-    @commands.command(name="grayline", category=cmn.Cats.WEATHER, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+        resp = await self.httpx_client.get(self.fof2_url)
+        await resp.aclose()
+        if resp.status_code != 200:
+            raise cmn.BotHTTPError(resp)
+        out = BytesIO(cairosvg.svg2png(bytestring=await resp.aread())) # type: ignore
+        file = discord.File(out, "fof2_map.png")
+        embed = cmn.embed_factory_slash(ctx)
+        embed.title = "Critical Frequency (foF2) Map"
+        embed.description = "Image from [prop.kc2g.com](https://prop.kc2g.com/)\nData sources listed on the page."
+        embed.set_image(url="attachment://fof2_map.png")
+        await ctx.send_followup(file=file, embed=embed)
+
+    @commands.slash_command(name="grayline", category=cmn.Cats.WEATHER, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
     async def grayline(self, ctx: std_commands.context.ApplicationContext):
         """Gets a map of the current greyline, where HF propagation is the best."""
         embed = cmn.embed_factory_slash(ctx)
@@ -74,7 +76,7 @@ class PropagationCog(commands.Cog):
         embed.set_image(url=self.gl_baseurl + date_params)
         await ctx.send_response(embed=embed)
 
-    @commands.command(name="solarweather", category=cmn.Cats.WEATHER, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    @commands.slash_command(name="solarweather", category=cmn.Cats.WEATHER, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
     async def solarweather(self, ctx: std_commands.context.ApplicationContext):
         """Gets a solar weather report."""
         resp = await self.httpx_client.get(self.n0nbh_sun_url)
@@ -89,7 +91,7 @@ class PropagationCog(commands.Cog):
         embed.set_image(url="attachment://solarweather.png")
         await ctx.send_response(file=file, embed=embed)
 
-    @commands.command(name="drap", category=cmn.Cats.WEATHER, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    @commands.slash_command(name="drap", category=cmn.Cats.WEATHER, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
     async def drapmap(self, ctx: std_commands.context.ApplicationContext):
         """Gets the current D-RAP map for radio blackouts"""
         embed = cmn.embed_factory_slash(ctx)

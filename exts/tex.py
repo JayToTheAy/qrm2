@@ -56,7 +56,7 @@ class TexCog(commands.Cog):
                                         "• Are you using a command from a package? It might not be available.\n"
                                         "• Are you including the document headers? We already did that for you.")
                 embed.colour = cmn.colours.bad
-                await ctx.send_response(embed=embed)
+                await ctx.send_followup(embed=embed)
                 return
 
         # if rendering went well, download the file given in the response
@@ -67,7 +67,7 @@ class TexCog(commands.Cog):
         embed.title = "LaTeX Expression"
         embed.description = "Rendered by [rTeX](https://rtex.probablyaweb.site/)."
         embed.set_image(url="attachment://tex.png")
-        await ctx.send_response(file=discord.File(png_buffer, "tex.png"), embed=embed)
+        await ctx.send_followup(file=discord.File(png_buffer, "tex.png"), embed=embed)
 
 
 def setup(bot: commands.Bot):
