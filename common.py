@@ -22,6 +22,7 @@ import httpx
 
 import discord
 import discord.ext.commands as commands
+from discord import commands as std_commands
 from discord import Emoji, PartialEmoji
 
 import data.options as opt
@@ -170,6 +171,11 @@ def embed_factory(ctx: commands.Context) -> discord.Embed:
         embed.set_footer(text=str(ctx.author), icon_url=str(ctx.author.avatar))
     return embed
 
+def embed_factory_slash(ctx: std_commands.context.ApplicationContext) -> discord.Embed:
+    embed = discord.Embed(timestamp=datetime.now(timezone.utc), colour=colours.neutral)
+    if ctx.author:
+        embed.set_footer(text=str(ctx.author), icon_url=str(ctx.author.avatar))
+    return embed
 
 def error_embed_factory(ctx: commands.Context, exception: Exception, debug_mode: bool) -> discord.Embed:
     """Creates an Error embed."""

@@ -48,11 +48,12 @@ loop = asyncio.get_event_loop()
 connector = loop.run_until_complete(conn.new_connector())
 
 # Defining the intents
-intents = discord.Intents.none()
-intents.guilds = True
-intents.messages = True
-intents.reactions = True
-intents.message_content = True
+intents = discord.Intents.default()
+# intents = discord.Intents.none()
+# intents.guilds = True
+# intents.messages = True
+# intents.reactions = True
+# intents.message_content = False
 
 member_cache = discord.MemberCacheFlags.from_intents(intents)
 
@@ -62,7 +63,7 @@ bot = commands.Bot(command_prefix=opt.prefix,
                    intents=intents,
                    member_cache_flags=member_cache,
                    loop=loop,
-                   connector=connector)
+                   connector=connector,)
 
 # Simple way to access bot-wide stuff in extensions.
 bot.qrm = SimpleNamespace()
@@ -86,6 +87,9 @@ async def _restart_bot(ctx: commands.Context):
     exit_code = 42  # Signals to the wrapper script that the bot needs to be restarted.
     await bot.close()
 
+@bot.slash_command(name="ping", category=cmn.BoltCats.ADMIN)
+async def ping(ctx): # a slash command will be created with the name "ping"
+    await ctx.send_response(f"Pong! Latency is {bot.latency}")
 
 @bot.command(name="shutdown", aliases=["shut"], category=cmn.BoltCats.ADMIN)
 @commands.check(cmn.check_if_owner)
@@ -96,6 +100,17 @@ async def _shutdown_bot(ctx: commands.Context):
     print(f"[**] Shutting down! Requested by {ctx.author}.")
     exit_code = 0  # Signals to the wrapper script that the bot should not be restarted.
     await bot.close()
+
+@bot.command(name="refresh", category=cmn.BoltCats.ADMIN)
+@commands.check(cmn.check_if_owner)
+async def _refresh_slash_command(ctx: commands.Context, guilds: str | None = None):
+    """Refreshes slash command in the target guild."""
+    await cmn.add_react(ctx.message, cmn.emojis.check_mark)
+    if guilds:
+        list_of_ids: list[int] = [int(item) for item in guilds.split(",")]
+        await bot.sync_commands(guild_ids=list_of_ids)
+    else:
+        await bot.sync_commands()
 
 
 @bot.group(name="extctl", aliases=["ex"], case_insensitive=True, category=cmn.BoltCats.ADMIN)
@@ -191,8 +206,9 @@ async def on_message(message):
 @bot.event
 async def on_command_error(ctx: commands.Context, err: commands.CommandError):
     if isinstance(err, commands.UserInputError):
-        await cmn.add_react(ctx.message, cmn.emojis.warning)
-        await ctx.send_help(ctx.command)
+        # await cmn.add_react(ctx.message, cmn.emojis.warning)
+        await ctx.send("Error.", silent=True)
+        # await ctx.send_help(ctx.command)
     elif isinstance(err, commands.CommandNotFound):
         if ctx.invoked_with and ctx.invoked_with.startswith(("?", "!")):
             return

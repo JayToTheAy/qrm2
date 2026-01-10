@@ -1,5 +1,5 @@
 # A quick installation script for painless discord bots.
-# v2.0.0
+# v2.0.1
 # Copyright (c) 2019 0x5c
 # Released under the terms of the MIT license.
 # Part of:
@@ -12,7 +12,7 @@
 # Those are the defaults; they can be over-ridden if specified
 # at en environment level or as 'make' arguments.
 BOTENV ?= botenv
-PYTHON_BIN ?= python3.11
+PYTHON_BIN ?= python3
 PIP_OUTPUT ?= -q
 
 

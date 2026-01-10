@@ -8,6 +8,8 @@ SPDX-License-Identifier: LiLiQ-Rplus-1.1
 
 
 import discord.ext.commands as commands
+from discord import commands as std_commands
+from discord import IntegrationType
 
 import common as cmn
 from resources import callsign_info
@@ -18,11 +20,11 @@ class PrefixesCog(commands.Cog):
         self.bot = bot
         self.pfxs = callsign_info.options
 
-    @commands.command(name="prefixes", aliases=["vanity", "pfx", "vanities", "prefix"], category=cmn.Cats.REF)
-    async def _vanity_prefixes(self, ctx: commands.Context, country: str = ""):
+    @commands.slash_command(name="prefixes", category=cmn.Cats.REF, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    async def _vanity_prefixes(self, ctx: std_commands.context.ApplicationContext, country: str = ""):
         """Lists valid callsign prefixes for different countries."""
         country = country.lower()
-        embed = cmn.embed_factory(ctx)
+        embed = cmn.embed_factory_slash(ctx)
         if country not in self.pfxs:
             desc = "Possible arguments are:\n"
             for key, val in self.pfxs.items():
@@ -30,7 +32,7 @@ class PrefixesCog(commands.Cog):
             embed.title = f"{country} Not Found!"
             embed.description = desc
             embed.colour = cmn.colours.bad
-            await ctx.send(embed=embed)
+            await ctx.send_response(embed=embed)
             return
         else:
             data = self.pfxs[country]
@@ -40,7 +42,7 @@ class PrefixesCog(commands.Cog):
 
             for name, val in data.calls.items():
                 embed.add_field(name=name, value=val, inline=False)
-        await ctx.send(embed=embed)
+        await ctx.send_response(embed=embed)
 
 
 def setup(bot: commands.Bot):

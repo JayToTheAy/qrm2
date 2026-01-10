@@ -11,6 +11,8 @@ import json
 import random
 
 import discord.ext.commands as commands
+from discord import commands as std_commands
+from discord import IntegrationType
 
 import common as cmn
 
@@ -25,36 +27,37 @@ class FunCog(commands.Cog):
         with open(cmn.paths.resources / "words.1.txt") as words_file:
             self.words = words_file.read().lower().splitlines()
 
-    @commands.command(name="xkcd", aliases=["x"], category=cmn.Cats.FUN)
-    async def _xkcd(self, ctx: commands.Context, number: int):
+    @commands.slash_command(name="xkcd", category=cmn.Cats.FUN, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    async def _xkcd(self, ctx: std_commands.context.ApplicationContext, number: int):
         """Looks up an xkcd comic by number."""
-        await ctx.send("http://xkcd.com/" + str(number))
+        await ctx.send_response("http://xkcd.com/" + str(number))
 
-    @commands.command(name="tar", category=cmn.Cats.FUN)
-    async def _tar(self, ctx: commands.Context):
+    @commands.slash_command(name="tar", category=cmn.Cats.FUN, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    async def _tar(self, ctx: std_commands.context.ApplicationContext):
         """Returns xkcd: tar."""
-        await ctx.send("http://xkcd.com/1168")
+        await ctx.send_response("http://xkcd.com/1168")
 
-    @commands.command(name="standards", category=cmn.Cats.FUN)
-    async def _standards(self, ctx: commands.Context):
+    @commands.slash_command(name="standards", category=cmn.Cats.FUN, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    async def _standards(self, ctx: std_commands.context.ApplicationContext):
         """Returns xkcd: Standards."""
-        await ctx.send("http://xkcd.com/927")
+        await ctx.send_response("http://xkcd.com/927")
 
-    @commands.command(name="worksplit", aliases=["split", "ft8"], category=cmn.Cats.FUN)
-    async def _worksplit(self, ctx: commands.Context):
+    @commands.slash_command(name="worksplit", category=cmn.Cats.FUN, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    async def _worksplit(self, ctx: std_commands.context.ApplicationContext):
         """Posts "Work split you lids"."""
-        embed = cmn.embed_factory(ctx)
+        embed = cmn.embed_factory_slash(ctx)
         embed.title = "Work Split, You Lids!"
         embed.set_image(url=opt.resources_url + self.imgs["worksplit"])
-        await ctx.send(embed=embed)
+        await ctx.send_response(embed=embed)
 
-    @commands.command(name="xd", hidden=True, category=cmn.Cats.FUN)
-    async def _xd(self, ctx: commands.Context):
-        """ecks dee"""
-        await ctx.send("ECKS DEE :smirk:")
+    # doesn't make sense in a world without posting. maybe this stays a manual read prefix type thing idk
+    # @commands.command(name="xd", hidden=True, category=cmn.Cats.FUN, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    # async def _xd(self, ctx: std_commands.context.ApplicationContext):
+    #     """ecks dee"""
+    #     await ctx.send_response("ECKS DEE :smirk:")
 
-    @commands.command(name="funetics", aliases=["fun"], category=cmn.Cats.FUN)
-    async def _funetics_lookup(self, ctx: commands.Context, *, msg: str):
+    @commands.slash_command(name="funetics", category=cmn.Cats.FUN, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    async def _funetics_lookup(self, ctx: std_commands.context.ApplicationContext, *, msg: str):
         """Generates fun/wacky phonetics for a word or phrase."""
         result = ""
         for char in msg.lower():
@@ -63,11 +66,11 @@ class FunCog(commands.Cog):
             else:
                 result += char
             result += " "
-        embed = cmn.embed_factory(ctx)
+        embed = cmn.embed_factory_slash(ctx)
         embed.title = f"Funetics for {msg}"
         embed.description = result.title()
         embed.colour = cmn.colours.good
-        await ctx.send(embed=embed)
+        await ctx.send_response(embed=embed)
 
 
 def setup(bot: commands.Bot):
