@@ -6,7 +6,6 @@ Copyright (C) 2021-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 from collections.abc import Mapping
 from datetime import datetime
 

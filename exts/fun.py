@@ -6,7 +6,6 @@ Copyright (C) 2019-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 import json
 import random
 
@@ -20,6 +19,7 @@ import data.options as opt
 
 
 class FunCog(commands.Cog):
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         with open(cmn.paths.resources / "imgs.1.json") as file:
@@ -27,22 +27,38 @@ class FunCog(commands.Cog):
         with open(cmn.paths.resources / "words.1.txt") as words_file:
             self.words = words_file.read().lower().splitlines()
 
-    @commands.slash_command(name="xkcd", category=cmn.Cats.FUN, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    @commands.slash_command(
+        name="xkcd",
+        category=cmn.Cats.FUN,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
     async def _xkcd(self, ctx: std_commands.context.ApplicationContext, number: int):
         """Looks up an xkcd comic by number."""
         await ctx.send_response("http://xkcd.com/" + str(number))
 
-    @commands.slash_command(name="tar", category=cmn.Cats.FUN, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    @commands.slash_command(
+        name="tar",
+        category=cmn.Cats.FUN,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
     async def _tar(self, ctx: std_commands.context.ApplicationContext):
         """Returns xkcd: tar."""
         await ctx.send_response("http://xkcd.com/1168")
 
-    @commands.slash_command(name="standards", category=cmn.Cats.FUN, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    @commands.slash_command(
+        name="standards",
+        category=cmn.Cats.FUN,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
     async def _standards(self, ctx: std_commands.context.ApplicationContext):
         """Returns xkcd: Standards."""
         await ctx.send_response("http://xkcd.com/927")
 
-    @commands.slash_command(name="worksplit", category=cmn.Cats.FUN, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    @commands.slash_command(
+        name="worksplit",
+        category=cmn.Cats.FUN,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
     async def _worksplit(self, ctx: std_commands.context.ApplicationContext):
         """Posts "Work split you lids"."""
         embed = cmn.embed_factory_slash(ctx)
@@ -50,19 +66,21 @@ class FunCog(commands.Cog):
         embed.set_image(url=opt.resources_url + self.imgs["worksplit"])
         await ctx.send_response(embed=embed)
 
-    # doesn't make sense in a world without posting. maybe this stays a manual read prefix type thing idk
-    # @commands.command(name="xd", hidden=True, category=cmn.Cats.FUN, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
-    # async def _xd(self, ctx: std_commands.context.ApplicationContext):
-    #     """ecks dee"""
-    #     await ctx.send_response("ECKS DEE :smirk:")
-
-    @commands.slash_command(name="funetics", category=cmn.Cats.FUN, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
-    async def _funetics_lookup(self, ctx: std_commands.context.ApplicationContext, *, msg: str):
+    @commands.slash_command(
+        name="funetics",
+        category=cmn.Cats.FUN,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
+    async def _funetics_lookup(
+        self, ctx: std_commands.context.ApplicationContext, *, msg: str
+    ):
         """Generates fun/wacky phonetics for a word or phrase."""
         result = ""
         for char in msg.lower():
             if char.isalpha():
-                result += random.choice([word for word in self.words if word[0] == char])
+                result += random.choice(
+                    [word for word in self.words if word[0] == char]
+                )
             else:
                 result += char
             result += " "

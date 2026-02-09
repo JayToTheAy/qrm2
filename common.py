@@ -6,7 +6,6 @@ Copyright (C) 2019-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 import collections.abc
 import enum
 import json
@@ -28,8 +27,19 @@ from discord import Emoji, PartialEmoji
 import data.options as opt
 
 
-__all__ = ["colours", "BoltCats", "Cats", "emojis", "paths", "ImageMetadata", "ImagesGroup",
-           "embed_factory", "error_embed_factory", "add_react", "check_if_owner"]
+__all__ = [
+    "colours",
+    "BoltCats",
+    "Cats",
+    "emojis",
+    "paths",
+    "ImageMetadata",
+    "ImagesGroup",
+    "embed_factory",
+    "error_embed_factory",
+    "add_react",
+    "check_if_owner",
+]
 
 
 # --- Common values ---
@@ -88,6 +98,7 @@ paths = SimpleNamespace(
 
 class ImageMetadata:
     """Represents the metadata of a single image."""
+
     def __init__(self, metadata: list):
         self.filename: str = metadata[0]
         self.name: str = metadata[1]
@@ -99,6 +110,7 @@ class ImageMetadata:
 
 class ImagesGroup(collections.abc.Mapping):
     """Represents a group of images, loaded from a meta.json file."""
+
     def __init__(self, file_path):
         self._images = {}
         self.path = file_path
@@ -125,8 +137,10 @@ class ImagesGroup(collections.abc.Mapping):
 
 # --- Exceptions ---
 
+
 class BotHTTPError(Exception):
     """Raised whan a requests fails (status != 200) in a command."""
+
     def __init__(self, response: aiohttp.ClientResponse | httpx.Response):
         if isinstance(response, aiohttp.ClientResponse):
             self.status = response.status
@@ -141,8 +155,10 @@ class BotHTTPError(Exception):
 
 # --- Converters ---
 
+
 class GlobalChannelConverter(commands.IDConverter):
     """Converter to get any bot-acessible channel by ID/mention (global), or name (in current guild only)."""
+
     async def convert(self, ctx: commands.Context, argument: str):
         bot = ctx.bot
         guild = ctx.guild
@@ -153,7 +169,9 @@ class GlobalChannelConverter(commands.IDConverter):
             if guild:
                 result = discord.utils.get(guild.text_channels, name=argument)
             else:
-                raise commands.BadArgument(f"""Channel named "{argument}" not found in this guild.""")
+                raise commands.BadArgument(
+                    f"""Channel named "{argument}" not found in this guild."""
+                )
         else:
             channel_id = int(match.group(1))
             result = bot.get_channel(channel_id)
@@ -164,6 +182,7 @@ class GlobalChannelConverter(commands.IDConverter):
 
 # --- Helper functions ---
 
+
 def embed_factory(ctx: commands.Context) -> discord.Embed:
     """Creates an embed with neutral colour and standard footer."""
     embed = discord.Embed(timestamp=datetime.now(timezone.utc), colour=colours.neutral)
@@ -171,16 +190,22 @@ def embed_factory(ctx: commands.Context) -> discord.Embed:
         embed.set_footer(text=str(ctx.author), icon_url=str(ctx.author.avatar))
     return embed
 
+
 def embed_factory_slash(ctx: std_commands.context.ApplicationContext) -> discord.Embed:
     embed = discord.Embed(timestamp=datetime.now(timezone.utc), colour=colours.neutral)
     if ctx.author:
         embed.set_footer(text=str(ctx.author), icon_url=str(ctx.author.avatar))
     return embed
 
-def error_embed_factory(ctx: commands.Context, exception: Exception, debug_mode: bool) -> discord.Embed:
+
+def error_embed_factory(
+    ctx: commands.Context, exception: Exception, debug_mode: bool
+) -> discord.Embed:
     """Creates an Error embed."""
     if debug_mode:
-        fmtd_ex = traceback.format_exception(exception.__class__, exception, exception.__traceback__)
+        fmtd_ex = traceback.format_exception(
+            exception.__class__, exception, exception.__traceback__
+        )
     else:
         fmtd_ex = traceback.format_exception_only(exception.__class__, exception)
     embed = embed_factory(ctx)
@@ -199,6 +224,7 @@ async def add_react(msg: discord.Message, react: Union[Emoji, PartialEmoji, str]
 
 
 # --- Checks ---
+
 
 async def check_if_owner(ctx: commands.Context):
     if ctx.author.id in opt.owners_uids:

@@ -7,13 +7,12 @@ Copyright (C) 2021-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 from typing import Dict
 
 import aiohttp
 from callsignlookuptools import QrzAsyncClient, CallsignLookupError, CallsignData
 
-from discord import Embed, IntegrationType
+from discord import IntegrationType
 from discord.ext import commands
 from discord import commands as std_commands
 
@@ -24,6 +23,7 @@ import data.keys as keys
 
 
 class QRZCog(commands.Cog):
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.qrz = None
@@ -36,14 +36,27 @@ class QRZCog(commands.Cog):
                         session_key = qrz_file.readline().strip()
                 except FileNotFoundError:
                     pass
-                self.qrz = QrzAsyncClient(username=keys.qrz_user, password=keys.qrz_pass, useragent="discord-qrm2",
-                                          session_key=session_key,
-                                          session=aiohttp.ClientSession(connector=bot.qrm.connector))
+                self.qrz = QrzAsyncClient(
+                    username=keys.qrz_user,
+                    password=keys.qrz_pass,
+                    useragent="discord-qrm2",
+                    session_key=session_key,
+                    session=aiohttp.ClientSession(connector=bot.qrm.connector),
+                )
         except AttributeError:
             pass
 
-    @commands.slash_command(name="call", category=cmn.Cats.LOOKUP, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
-    async def _qrz_lookup_slash(self, ctx: std_commands.context.ApplicationContext, callsign: str, private: bool = False):
+    @commands.slash_command(
+        name="call",
+        category=cmn.Cats.LOOKUP,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
+    async def _qrz_lookup_slash(
+        self,
+        ctx: std_commands.context.ApplicationContext,
+        callsign: str,
+        private: bool = False,
+    ):
         if self.qrz is None:
             await ctx.send_response(f"http://qrz.com/db/{callsign}", ephemeral=private)
             return
@@ -70,6 +83,7 @@ class QRZCog(commands.Cog):
             if val is not None and (val := str(val)):
                 embed.add_field(name=title, value=val, inline=True)
         await ctx.send_followup(embed=embed, ephemeral=private)
+
 
 def qrz_process_info(data: CallsignData) -> Dict:
     if data.name is not None:
@@ -104,7 +118,9 @@ def qrz_process_info(data: CallsignData) -> Dict:
         "CQ Zone": data.cq_zone,
         "ITU Zone": data.itu_zone,
         "IOTA Designator": data.iota,
-        "Expires": f"{data.expire_date:%Y-%m-%d}" if data.expire_date is not None else None,
+        "Expires": f"{data.expire_date:%Y-%m-%d}"
+        if data.expire_date is not None
+        else None,
         "Aliases": ", ".join(data.aliases) if data.aliases else None,
         "Previous Callsign": data.prev_call,
         "License Class": data.lic_class,

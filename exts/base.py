@@ -6,7 +6,6 @@ Copyright (C) 2019-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 import inspect
 import random
 import re
@@ -23,16 +22,21 @@ from data import options as opt
 
 
 class QrmHelpCommand(commands.HelpCommand):
+
     def __init__(self):
-        super().__init__(command_attrs={
-            "help": "Shows help about qrm or a command",
-            "aliases": ["h"],
-            "category": cmn.BoltCats.INFO
-            })
+        super().__init__(
+            command_attrs={
+                "help": "Shows help about qrm or a command",
+                "aliases": ["h"],
+                "category": cmn.BoltCats.INFO,
+            }
+        )
         self.verify_checks = True
         self.context: commands.Context
 
-    async def filter_commands(self, commands: Iterable[Command], **kwargs) -> list[Command]:
+    async def filter_commands(
+        self, commands: Iterable[Command], **kwargs
+    ) -> list[Command]:
         def sort_by_cat(cmds):
             ret = []
             bolt_cmds = {}
@@ -54,7 +58,9 @@ class QrmHelpCommand(commands.HelpCommand):
 
             return ret
 
-        iterator = commands if self.show_hidden else filter(lambda c: not c.hidden, commands)
+        iterator = (
+            commands if self.show_hidden else filter(lambda c: not c.hidden, commands)
+        )
 
         if not self.verify_checks:
             return sort_by_cat(iterator)
@@ -106,11 +112,16 @@ class QrmHelpCommand(commands.HelpCommand):
     async def send_bot_help(self, mapping):
         embed = cmn.embed_factory(self.context)
         embed.title = "qrm Help"
-        embed.description = (f"For command-specific help and usage, use `{self.context.prefix}help [command name]`."
-                             " Many commands have shorter aliases.")
+        embed.description = (
+            f"For command-specific help and usage, use `{self.context.prefix}help [command name]`."
+            " Many commands have shorter aliases."
+        )
         if isinstance(self.context.bot.command_prefix, list):
-            embed.description += (" All of the following prefixes work with the bot: `"
-                                  + "`, `".join(self.context.bot.command_prefix) + "`.")
+            embed.description += (
+                " All of the following prefixes work with the bot: `"
+                + "`, `".join(self.context.bot.command_prefix)
+                + "`."
+            )
         mapping = await mapping
 
         for cat, cmds in mapping.items():
@@ -142,12 +153,16 @@ class QrmHelpCommand(commands.HelpCommand):
         embed.title = await self.get_command_signature(group)
         embed.description = group.help
         for cmd in await self.filter_commands(group.commands, sort=True):
-            embed.add_field(name=await self.get_command_signature(cmd), value=cmd.help if cmd.help else "",
-                            inline=False)
+            embed.add_field(
+                name=await self.get_command_signature(cmd),
+                value=cmd.help if cmd.help else "",
+                inline=False,
+            )
         await self.context.send(embed=embed)
 
 
 class BaseCog(commands.Cog):
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.changelog = parse_changelog()
@@ -174,14 +189,18 @@ class BaseCog(commands.Cog):
         }
         self.bot_invite = ""
         if self.bot.user:
-            self.bot_invite = (f"https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}"
-                               f"&scope=bot&permissions={opt.invite_perms}")
+            self.bot_invite = (
+                f"https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}"
+                f"&scope=bot&permissions={opt.invite_perms}"
+            )
 
     @commands.Cog.listener()
     async def on_ready(self):
         if not self.bot_invite and self.bot.user:
-            self.bot_invite = (f"https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}"
-                               f"&scope=bot&permissions={opt.invite_perms}")
+            self.bot_invite = (
+                f"https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}"
+                f"&scope=bot&permissions={opt.invite_perms}"
+            )
 
     @commands.command(name="info", aliases=["about"], category=cmn.BoltCats.INFO)
     async def _info(self, ctx: commands.Context):
@@ -191,13 +210,23 @@ class BaseCog(commands.Cog):
         embed.description = inspect.cleandoc(info.description)
         embed.add_field(name="Authors", value=", ".join(info.authors))
         embed.add_field(name="License", value=info.license)
-        embed.add_field(name="Version", value=f"v{info.release} {'(`' + self.commit + '`)' if self.commit else ''}")
-        embed.add_field(name="Contributing", value=inspect.cleandoc(info.contributing), inline=False)
+        embed.add_field(
+            name="Version",
+            value=f"v{info.release} {'(`' + self.commit + '`)' if self.commit else ''}",
+        )
+        embed.add_field(
+            name="Contributing", value=inspect.cleandoc(info.contributing), inline=False
+        )
         embed.add_field(name="Official Server", value=info.bot_server, inline=False)
-        embed.add_field(name="Donate", value="\n".join(f"{k}: {v}" for k, v in self.donation_links.items()),
-                        inline=False)
+        embed.add_field(
+            name="Donate",
+            value="\n".join(f"{k}: {v}" for k, v in self.donation_links.items()),
+            inline=False,
+        )
         if opt.enable_invite_cmd and (await self.bot.application_info()).bot_public:
-            embed.add_field(name="Invite qrm to Your Server", value=self.bot_invite, inline=False)
+            embed.add_field(
+                name="Invite qrm to Your Server", value=self.bot_invite, inline=False
+            )
         if self.bot.user and self.bot.user.avatar:
             embed.set_thumbnail(url=str(self.bot.user.avatar.url))
         await ctx.send(embed=embed)
@@ -220,8 +249,10 @@ class BaseCog(commands.Cog):
         """Shows what has changed in a bot version. Defaults to the latest version."""
         embed = cmn.embed_factory(ctx)
         embed.title = "qrm Changelog"
-        embed.description = ("For a full listing, visit [Github](https://"
-                             "github.com/miaowware/qrm2/blob/master/CHANGELOG.md).")
+        embed.description = (
+            "For a full listing, visit [Github](https://"
+            "github.com/miaowware/qrm2/blob/master/CHANGELOG.md)."
+        )
         changelog = self.changelog
         vers = list(changelog.keys())
         vers.remove("Unreleased")
@@ -264,13 +295,17 @@ class BaseCog(commands.Cog):
         """Shows ways to help support development of the bot via donations."""
         embed = cmn.embed_factory(ctx)
         embed.title = "Help Support qrm's Development!"
-        embed.description = ("Donations are always appreciated, and help with server and infrastructure costs."
-                             "\nThank you for your support!")
+        embed.description = (
+            "Donations are always appreciated, and help with server and infrastructure costs."
+            "\nThank you for your support!"
+        )
         for title, url in self.donation_links.items():
             embed.add_field(name=title, value=url, inline=False)
         await ctx.send(embed=embed)
 
-    @commands.command(name="invite", enabled=opt.enable_invite_cmd, category=cmn.BoltCats.INFO)
+    @commands.command(
+        name="invite", enabled=opt.enable_invite_cmd, category=cmn.BoltCats.INFO
+    )
     async def _invite(self, ctx: commands.Context):
         """Generates a link to invite the bot to a server."""
         if not (await self.bot.application_info()).bot_public:
@@ -282,8 +317,13 @@ class BaseCog(commands.Cog):
 
     @commands.command(name="echo", aliases=["e"], category=cmn.BoltCats.ADMIN)
     @commands.check(cmn.check_if_owner)
-    async def _echo(self, ctx: commands.Context,
-                    channel: Union[cmn.GlobalChannelConverter, commands.UserConverter], *, msg: str):
+    async def _echo(
+        self,
+        ctx: commands.Context,
+        channel: Union[cmn.GlobalChannelConverter, commands.UserConverter],
+        *,
+        msg: str,
+    ):
         """Sends a message in a channel as qrm. Accepts channel/user IDs/mentions.
         Channel names are current-guild only.
         Does not work with the ID of the bot user."""
@@ -302,7 +342,9 @@ def parse_changelog():
             if line.strip() == "":
                 continue
             if re.match(r"##[^#]", line):
-                ver_match = re.match(r"\[(.+)\](?: - )?(\d{4}-\d{2}-\d{2})?", line.lstrip("#").strip())
+                ver_match = re.match(
+                    r"\[(.+)\](?: - )?(\d{4}-\d{2}-\d{2})?", line.lstrip("#").strip()
+                )
                 if ver_match is not None:
                     ver = ver_match.group(1)
                     changelog[ver] = dict()

@@ -7,7 +7,6 @@ Copyright (C) 2021-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 import threading
 from pathlib import Path
 
@@ -24,6 +23,7 @@ cty_path = Path("./data/cty.json")
 
 
 class DXCCCog(commands.Cog):
+
     def __init__(self, bot):
         self.bot = bot
         try:
@@ -31,8 +31,17 @@ class DXCCCog(commands.Cog):
         except OSError:
             self.cty = BigCty()
 
-    @commands.slash_command(name="dxcc", category=cmn.Cats.LOOKUP, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
-    async def _dxcc_lookup(self, ctx: std_commands.context.ApplicationContext, query: str, private: bool = False):
+    @commands.slash_command(
+        name="dxcc",
+        category=cmn.Cats.LOOKUP,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
+    async def _dxcc_lookup(
+        self,
+        ctx: std_commands.context.ApplicationContext,
+        query: str,
+        private: bool = False,
+    ):
         """Gets DXCC info about a callsign prefix."""
         query = query.upper()
         full_query = query
@@ -47,8 +56,10 @@ class DXCCCog(commands.Cog):
                 embed.add_field(name="CQ Zone", value=data["cq"])
                 embed.add_field(name="ITU Zone", value=data["itu"])
                 embed.add_field(name="Continent", value=data["continent"])
-                embed.add_field(name="Time Zone",
-                                value=f"+{data['tz']}" if data["tz"] > 0 else str(data["tz"]))
+                embed.add_field(
+                    name="Time Zone",
+                    value=f"+{data['tz']}" if data["tz"] > 0 else str(data["tz"]),
+                )
                 embed.title += query
                 embed.colour = cmn.colours.good
                 break

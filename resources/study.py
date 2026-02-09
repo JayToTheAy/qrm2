@@ -6,7 +6,6 @@ Copyright (C) 2019-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 pool_names = {
     "us": {
         "technician": "E2",

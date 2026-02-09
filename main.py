@@ -38,7 +38,9 @@ exit_code = 1  # The default exit code. ?shutdown and ?restart will change it ac
 ext_dir = "exts"  # The name of the directory where extensions are located.
 plugin_dir = "data.plugins"  # The name of the directory where plugins are located.
 
-debug_mode = opt.debug  # Separate assignement in-case we define an override (ternary operator goes here)
+debug_mode = (
+    opt.debug
+)  # Separate assignement in-case we define an override (ternary operator goes here)
 
 
 # --- Bot setup ---
@@ -57,13 +59,16 @@ intents = discord.Intents.default()
 
 member_cache = discord.MemberCacheFlags.from_intents(intents)
 
-bot = commands.Bot(command_prefix=opt.prefix,
-                   case_insensitive=True,
-                   description=info.description, help_command=commands.MinimalHelpCommand(),
-                   intents=intents,
-                   member_cache_flags=member_cache,
-                   loop=loop,
-                   connector=connector,)
+bot = commands.Bot(
+    command_prefix=opt.prefix,
+    case_insensitive=True,
+    description=info.description,
+    help_command=commands.MinimalHelpCommand(),
+    intents=intents,
+    member_cache_flags=member_cache,
+    loop=loop,
+    connector=connector,
+)
 
 # Simple way to access bot-wide stuff in extensions.
 bot.qrm = SimpleNamespace()
@@ -77,6 +82,7 @@ bot.qrm.httpx_client = httpx.AsyncClient()
 
 # --- Commands ---
 
+
 @bot.command(name="restart", aliases=["rs"], category=cmn.BoltCats.ADMIN)
 @commands.check(cmn.check_if_owner)
 async def _restart_bot(ctx: commands.Context):
@@ -87,9 +93,11 @@ async def _restart_bot(ctx: commands.Context):
     exit_code = 42  # Signals to the wrapper script that the bot needs to be restarted.
     await bot.close()
 
+
 @bot.slash_command(name="ping", category=cmn.BoltCats.ADMIN)
-async def ping(ctx): # a slash command will be created with the name "ping"
+async def ping(ctx):  # a slash command will be created with the name "ping"
     await ctx.send_response(f"Pong! Latency is {bot.latency}")
+
 
 @bot.command(name="shutdown", aliases=["shut"], category=cmn.BoltCats.ADMIN)
 @commands.check(cmn.check_if_owner)
@@ -100,6 +108,7 @@ async def _shutdown_bot(ctx: commands.Context):
     print(f"[**] Shutting down! Requested by {ctx.author}.")
     exit_code = 0  # Signals to the wrapper script that the bot should not be restarted.
     await bot.close()
+
 
 @bot.command(name="refresh", category=cmn.BoltCats.ADMIN)
 @commands.check(cmn.check_if_owner)
@@ -113,7 +122,9 @@ async def _refresh_slash_command(ctx: commands.Context, guilds: str | None = Non
         await bot.sync_commands()
 
 
-@bot.group(name="extctl", aliases=["ex"], case_insensitive=True, category=cmn.BoltCats.ADMIN)
+@bot.group(
+    name="extctl", aliases=["ex"], case_insensitive=True, category=cmn.BoltCats.ADMIN
+)
 @commands.check(cmn.check_if_owner)
 async def _extctl(ctx: commands.Context):
     """Extension control commands.
@@ -129,9 +140,17 @@ async def _extctl_list(ctx: commands.Context):
     embed = cmn.embed_factory(ctx)
     embed.title = "Loaded Extensions"
     embed.description = "\n".join(
-                            ["‣ " + x.split(".")[-1] for x in bot.extensions.keys() if not x.startswith(plugin_dir)]
-                        )
-    if plugins := ["‣ " + x.split(".")[-1] for x in bot.extensions.keys() if x.startswith(plugin_dir)]:
+        [
+            "‣ " + x.split(".")[-1]
+            for x in bot.extensions.keys()
+            if not x.startswith(plugin_dir)
+        ]
+    )
+    if plugins := [
+        "‣ " + x.split(".")[-1]
+        for x in bot.extensions.keys()
+        if x.startswith(plugin_dir)
+    ]:
         embed.add_field(name="Loaded Plugins", value="\n".join(plugins))
     await ctx.send(embed=embed)
 
@@ -181,6 +200,7 @@ async def _extctl_unload(ctx: commands.Context, extension: str):
 
 # --- Events ---
 
+
 @bot.event
 async def on_ready():
     print(f"Logged in as: {bot.user} - {bot.user.id}")
@@ -198,7 +218,9 @@ async def on_message(message):
     msg = message.content.lower()
     for emoji, keywords in opt.msg_reacts.items():
         if any([keyword in msg for keyword in keywords]):
-            await message.add_reaction(discord.utils.find(lambda x: x.id == emoji, bot.emojis))
+            await message.add_reaction(
+                discord.utils.find(lambda x: x.id == emoji, bot.emojis)
+            )
 
     await bot.process_commands(message)
 
@@ -239,6 +261,7 @@ async def on_command_error(ctx: commands.Context, err: commands.CommandError):
 
 
 # --- Tasks ---
+
 
 @tasks.loop(minutes=5)
 async def _ensure_activity_time():
@@ -287,15 +310,15 @@ async def _ensure_activity_fixed():
 # --- Run ---
 
 resource_versions = {
-        "bandcharts": "v1",
-        "img": "v1",
-        "maps": "v1",
-        "morse": "v1",
-        "phonetics": "v1",
-        "qcodes": "v1",
-        "funetics": "v1",
-        "latex_template": "v1",
-    }
+    "bandcharts": "v1",
+    "img": "v1",
+    "maps": "v1",
+    "morse": "v1",
+    "phonetics": "v1",
+    "qcodes": "v1",
+    "funetics": "v1",
+    "latex_template": "v1",
+}
 
 bot.qrm.rm = ResourcesManager(cmn.paths.resources, opt.resources_url, resource_versions)
 
@@ -320,7 +343,11 @@ except discord.ConnectionClosed as ex:
     # When the connection to the gateway (websocket) is closed
     if bot.qrm.debug_mode:
         raise
-    raise SystemExit("Error: Discord gateway connection closed: [Code {}] {}".format(ex.code, ex.reason))
+    raise SystemExit(
+        "Error: Discord gateway connection closed: [Code {}] {}".format(
+            ex.code, ex.reason
+        )
+    )
 
 except ConnectionResetError as ex:
     # More generic connection reset error

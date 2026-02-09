@@ -6,7 +6,6 @@ Copyright (C) 2019-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 import json
 
 import discord.ext.commands as commands
@@ -17,6 +16,7 @@ import common as cmn
 
 
 class MorseCog(commands.Cog):
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         with open(cmn.paths.resources / "morse.1.json") as file:
@@ -24,7 +24,11 @@ class MorseCog(commands.Cog):
             self.morse: dict[str, str] = d["morse"]
             self.ascii: dict[str, str] = d["ascii"]
 
-    @commands.slash_command(name="morse", category=cmn.Cats.CODES, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    @commands.slash_command(
+        name="morse",
+        category=cmn.Cats.CODES,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
     async def _morse(self, ctx: std_commands.context.ApplicationContext, msg: str):
         """Converts ASCII to international morse code."""
         result = ""
@@ -40,7 +44,11 @@ class MorseCog(commands.Cog):
         embed.colour = cmn.colours.good
         await ctx.send_response(embed=embed)
 
-    @commands.slash_command(name="unmorse", category=cmn.Cats.CODES, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    @commands.slash_command(
+        name="unmorse",
+        category=cmn.Cats.CODES,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
     async def _unmorse(self, ctx: std_commands.context.ApplicationContext, msg: str):
         """Converts international morse code to ASCII."""
         result = ""
@@ -60,7 +68,11 @@ class MorseCog(commands.Cog):
         embed.colour = cmn.colours.good
         await ctx.send_response(embed=embed)
 
-    @commands.slash_command(name="cwweight", category=cmn.Cats.CODES, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    @commands.slash_command(
+        name="cwweight",
+        category=cmn.Cats.CODES,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
     async def _weight(self, ctx: std_commands.context.ApplicationContext, msg: str):
         """Calculates the CW weight of a callsign or message."""
         embed = cmn.embed_factory_slash(ctx)

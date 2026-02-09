@@ -6,7 +6,6 @@ Copyright (C) 2020-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 import math
 from enum import Enum
 from typing import Optional
@@ -20,6 +19,7 @@ from data import options as opt
 
 # not sure why but UnitConverter and Unit need to be defined before DbConvCog and convert()
 class UnitConverter(commands.Converter):
+
     async def convert(self, ctx: commands.Context, argument: str):
         is_db = None
         mult = None
@@ -63,14 +63,18 @@ class Unit:
 
 
 class DbConvCog(commands.Cog):
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command(name="dbconv", aliases=["dbc"], category=cmn.Cats.CALC)
-    async def _db_conv(self, ctx: commands.Context,
-                       value: Optional[float] = None,
-                       unit_from: Optional[UnitConverter] = None,
-                       unit_to: Optional[UnitConverter] = None):
+    async def _db_conv(
+        self,
+        ctx: commands.Context,
+        value: Optional[float] = None,
+        unit_from: Optional[UnitConverter] = None,
+        unit_to: Optional[UnitConverter] = None,
+    ):
         """
         Convert between decibels and scalar values for voltage, power, and antenna gain.
 
@@ -83,7 +87,9 @@ class DbConvCog(commands.Cog):
         if value is not None and unit_from is not None and unit_to is not None:
             converted = convert(value, unit_from, unit_to)
 
-            embed.title = f"{value:.3g} {unit_from.unit} = {converted:.3g} {unit_to.unit}"
+            embed.title = (
+                f"{value:.3g} {unit_from.unit} = {converted:.3g} {unit_to.unit}"
+            )
             embed.colour = cmn.colours.good
         else:
             embed.title = "Decibel Quick Reference"
@@ -92,23 +98,31 @@ class DbConvCog(commands.Cog):
                 "There are a few main types that are used often in radio: voltage, power, and antenna gain. "
                 "Here are some commonly-used reference levels for each type:"
             )
-            v_db_info = ("**dBV** = relative to 1 V\n"
-                         "**dBmV** = relative to 1 mV (1e-3 V)\n"
-                         "**dBµV** = relative to 1 µV (1e-6 V)")
+            v_db_info = (
+                "**dBV** = relative to 1 V\n"
+                "**dBmV** = relative to 1 mV (1e-3 V)\n"
+                "**dBµV** = relative to 1 µV (1e-6 V)"
+            )
             embed.add_field(name="Voltage Decibels", value=v_db_info, inline=False)
-            p_db_info = ("**dBW** = relative to 1 W\n"
-                         "**dBk** = relative to 1 kW (1e3 W)\n"
-                         "**dBm** = relative to 1 mW (1e-3 W)\n"
-                         "**dBf** = relative to 1 fW (1e-15 W)")
+            p_db_info = (
+                "**dBW** = relative to 1 W\n"
+                "**dBk** = relative to 1 kW (1e3 W)\n"
+                "**dBm** = relative to 1 mW (1e-3 W)\n"
+                "**dBf** = relative to 1 fW (1e-15 W)"
+            )
             embed.add_field(name="Power Decibels", value=p_db_info, inline=False)
-            a_db_info = ("**dBi** = relative to a theoretical __i__sotropic radiator in free space "
-                         "(equal radiation in all directions)\n"
-                         "**dBd** = relative to a dipole in free space (0 dBd = 2.15 dBi)\n"
-                         "**dBq** = relative to a quarter-wave antenna in free space (0 dBq = -0.85 dBi)")
+            a_db_info = (
+                "**dBi** = relative to a theoretical __i__sotropic radiator in free space "
+                "(equal radiation in all directions)\n"
+                "**dBd** = relative to a dipole in free space (0 dBd = 2.15 dBi)\n"
+                "**dBq** = relative to a quarter-wave antenna in free space (0 dBq = -0.85 dBi)"
+            )
             embed.add_field(name="Antenna Gain Decibels", value=a_db_info, inline=False)
-            embed.add_field(name="Use the bot to do the conversions",
-                            value=f"`{opt.display_prefix}dbconv [value] [unit_from] [unit_to]`",
-                            inline=False)
+            embed.add_field(
+                name="Use the bot to do the conversions",
+                value=f"`{opt.display_prefix}dbconv [value] [unit_from] [unit_to]`",
+                inline=False,
+            )
         await ctx.send(embed=embed)
 
 
@@ -150,22 +164,22 @@ def convert(initial: float, unit1: Unit, unit2: Unit):
 
 units = {
     # voltage
-    "uv": {"mult": 1e-6,  "scalar": "µV", "log": "dBµV", "type": UnitType.voltage},
-    "µv": {"mult": 1e-6,  "scalar": "µV", "log": "dBµV", "type": UnitType.voltage},
-    "mv": {"mult": 1e-3,  "scalar": "mV", "log": "dBmV", "type": UnitType.voltage},
-    "v":  {"mult": 1,     "scalar":  "V", "log":  "dBV", "type": UnitType.voltage},
+    "uv": {"mult": 1e-6, "scalar": "µV", "log": "dBµV", "type": UnitType.voltage},
+    "µv": {"mult": 1e-6, "scalar": "µV", "log": "dBµV", "type": UnitType.voltage},
+    "mv": {"mult": 1e-3, "scalar": "mV", "log": "dBmV", "type": UnitType.voltage},
+    "v": {"mult": 1, "scalar": "V", "log": "dBV", "type": UnitType.voltage},
     # power
-    "fw": {"mult": 1e-15, "scalar": "fW", "log":  "dBf", "type": UnitType.power},
-    "f":  {"mult": 1e-15, "scalar": "fW", "log":  "dBf", "type": UnitType.power},
-    "mw": {"mult": 1e-3,  "scalar": "mW", "log":  "dBm", "type": UnitType.power},
-    "m":  {"mult": 1e-3,  "scalar": "mW", "log":  "dBm", "type": UnitType.power},
-    "w":  {"mult": 1,     "scalar":  "W", "log":  "dBW", "type": UnitType.power},
-    "kw": {"mult": 1e3,   "scalar": "kW", "log":  "dBk", "type": UnitType.power},
-    "k":  {"mult": 1e3,   "scalar": "kW", "log":  "dBk", "type": UnitType.power},
+    "fw": {"mult": 1e-15, "scalar": "fW", "log": "dBf", "type": UnitType.power},
+    "f": {"mult": 1e-15, "scalar": "fW", "log": "dBf", "type": UnitType.power},
+    "mw": {"mult": 1e-3, "scalar": "mW", "log": "dBm", "type": UnitType.power},
+    "m": {"mult": 1e-3, "scalar": "mW", "log": "dBm", "type": UnitType.power},
+    "w": {"mult": 1, "scalar": "W", "log": "dBW", "type": UnitType.power},
+    "kw": {"mult": 1e3, "scalar": "kW", "log": "dBk", "type": UnitType.power},
+    "k": {"mult": 1e3, "scalar": "kW", "log": "dBk", "type": UnitType.power},
     # antenna
-    "q":  {"mult": -0.85, "scalar": None, "log":  "dBq", "type": UnitType.antenna},
-    "i":  {"mult": 0,     "scalar": None, "log":  "dBi", "type": UnitType.antenna},
-    "d":  {"mult": 2.15,  "scalar": None, "log":  "dBd", "type": UnitType.antenna},
+    "q": {"mult": -0.85, "scalar": None, "log": "dBq", "type": UnitType.antenna},
+    "i": {"mult": 0, "scalar": None, "log": "dBi", "type": UnitType.antenna},
+    "d": {"mult": 2.15, "scalar": None, "log": "dBd", "type": UnitType.antenna},
 }
 
 

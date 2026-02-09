@@ -74,11 +74,13 @@ statuses = ["with lids on the air", "with fire"]
 status_tz = "US/Eastern"
 
 # The text to put in the "playing" status, with start and stop times
-time_statuses = [("with lids on 3.840", (00, 00), (6, 00)),
-                 ("with lids on 7.200", (6, 00), (10, 00)),
-                 ("with lids on 14.313", (10, 00), (18, 00)),
-                 ("with lids on 7.200", (18, 00), (20, 00)),
-                 ("with lids on 3.840", (20, 00), (23, 59))]
+time_statuses = [
+    ("with lids on 3.840", (00, 00), (6, 00)),
+    ("with lids on 7.200", (6, 00), (10, 00)),
+    ("with lids on 14.313", (10, 00), (18, 00)),
+    ("with lids on 7.200", (18, 00), (20, 00)),
+    ("with lids on 3.840", (20, 00), (23, 59)),
+]
 
 # append " | {display_prefix}help" to the Discord playing status
 show_help = False

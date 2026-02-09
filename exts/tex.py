@@ -6,7 +6,6 @@ Copyright (C) 2021-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 import aiohttp
 from io import BytesIO
 from urllib.parse import urljoin
@@ -21,13 +20,18 @@ import data.options as opt
 
 
 class TexCog(commands.Cog):
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.session = aiohttp.ClientSession(connector=bot.qrm.connector)
         with open(cmn.paths.resources / "template.1.tex") as latex_template:
             self.template = latex_template.read()
 
-    @commands.slash_command(name="latex", category=cmn.Cats.UTILS, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    @commands.slash_command(
+        name="latex",
+        category=cmn.Cats.UTILS,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
     async def tex(self, ctx: std_commands.context.ApplicationContext, *, expr: str):
         """Renders a LaTeX expression.
 
@@ -36,13 +40,15 @@ class TexCog(commands.Cog):
         payload = {
             "format": "png",
             "code": self.template.replace("#CONTENT#", expr),
-            "quality": 50
+            "quality": 50,
         }
 
         await ctx.defer()
 
         # ask rTeX to render our expression
-        async with self.session.post(urljoin(opt.rtex_instance, "api/v2"), json=payload) as r:
+        async with self.session.post(
+            urljoin(opt.rtex_instance, "api/v2"), json=payload
+        ) as r:
             if r.status != 200:
                 raise cmn.BotHTTPError(r)
 
@@ -50,17 +56,21 @@ class TexCog(commands.Cog):
             if render_result["status"] != "success":
                 embed = cmn.embed_factory_slash(ctx)
                 embed.title = "LaTeX Rendering Failed!"
-                embed.description = ("Here are some common reasons:\n"
-                                        "• Did you forget to use math mode? Surround math expressions with `$`,"
-                                        " like `$x^3$`.\n"
-                                        "• Are you using a command from a package? It might not be available.\n"
-                                        "• Are you including the document headers? We already did that for you.")
+                embed.description = (
+                    "Here are some common reasons:\n"
+                    "• Did you forget to use math mode? Surround math expressions with `$`,"
+                    " like `$x^3$`.\n"
+                    "• Are you using a command from a package? It might not be available.\n"
+                    "• Are you including the document headers? We already did that for you."
+                )
                 embed.colour = cmn.colours.bad
                 await ctx.send_followup(embed=embed)
                 return
 
         # if rendering went well, download the file given in the response
-        async with self.session.get(urljoin(opt.rtex_instance, "api/v2/" + render_result["filename"])) as r:
+        async with self.session.get(
+            urljoin(opt.rtex_instance, "api/v2/" + render_result["filename"])
+        ) as r:
             png_buffer = BytesIO(await r.read())
 
         embed = cmn.embed_factory_slash(ctx)

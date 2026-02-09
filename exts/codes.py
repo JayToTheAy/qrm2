@@ -7,7 +7,6 @@ Copyright (C) 2021-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 import json
 
 import discord.ext.commands as commands
@@ -18,6 +17,7 @@ import common as cmn
 
 
 class HamCog(commands.Cog):
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         with open(cmn.paths.resources / "phonetics.1.json") as file:
@@ -27,8 +27,14 @@ class HamCog(commands.Cog):
         with open(cmn.paths.resources / "qcodes.1.json") as file:
             self.qcodes: dict = json.load(file)
 
-    @commands.slash_command(name="qcode", category=cmn.Cats.CODES, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
-    async def _qcode_lookup(self, ctx: std_commands.context.ApplicationContext, qcode: str):
+    @commands.slash_command(
+        name="qcode",
+        category=cmn.Cats.CODES,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
+    async def _qcode_lookup(
+        self, ctx: std_commands.context.ApplicationContext, qcode: str
+    ):
         """Looks up the meaning of a Q Code."""
         qcode = qcode.upper()
         embed = cmn.embed_factory_slash(ctx)
@@ -41,8 +47,14 @@ class HamCog(commands.Cog):
             embed.colour = cmn.colours.bad
         await ctx.send_response(embed=embed)
 
-    @commands.slash_command(name="phonetics", category=cmn.Cats.CODES, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
-    async def _phonetics_lookup(self, ctx: std_commands.context.ApplicationContext, msg: str):
+    @commands.slash_command(
+        name="phonetics",
+        category=cmn.Cats.CODES,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
+    async def _phonetics_lookup(
+        self, ctx: std_commands.context.ApplicationContext, msg: str
+    ):
         """Returns NATO phonetics for a word or phrase."""
         result = ""
         for char in msg.lower():
@@ -57,7 +69,11 @@ class HamCog(commands.Cog):
         embed.colour = cmn.colours.good
         await ctx.send_response(embed=embed)
 
-    @commands.slash_command(name="phoneticweight", category=cmn.Cats.CODES, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
+    @commands.slash_command(
+        name="phoneticweight",
+        category=cmn.Cats.CODES,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
     async def _weight(self, ctx: std_commands.context.ApplicationContext, msg: str):
         """Calculates the phonetic weight of a callsign or message."""
         embed = cmn.embed_factory_slash(ctx)

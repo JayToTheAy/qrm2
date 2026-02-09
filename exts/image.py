@@ -6,7 +6,6 @@ Copyright (C) 2019-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 import aiohttp
 
 import discord.ext.commands as commands
@@ -19,24 +18,44 @@ import data.options as opt
 
 
 class ImageCog(commands.Cog):
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.bandcharts = cmn.ImagesGroup(cmn.paths.resources / "bandcharts.1.json")
         self.maps = cmn.ImagesGroup(cmn.paths.resources / "maps.1.json")
         self.session = aiohttp.ClientSession(connector=bot.qrm.connector)
 
-    @commands.slash_command(name="bandchart", category=cmn.Cats.REF, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
-    async def _bandcharts(self, ctx: std_commands.context.ApplicationContext, chart_id: str = ""):
+    @commands.slash_command(
+        name="bandchart",
+        category=cmn.Cats.REF,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
+    async def _bandcharts(
+        self, ctx: std_commands.context.ApplicationContext, chart_id: str = ""
+    ):
         """Gets the frequency allocations chart for a given country."""
-        await ctx.send_response(embed=create_embed(ctx, "Bandchart", self.bandcharts, chart_id))
+        await ctx.send_response(
+            embed=create_embed(ctx, "Bandchart", self.bandcharts, chart_id)
+        )
 
-    @commands.slash_command(name="map", category=cmn.Cats.REF, integration_types={IntegrationType.guild_install, IntegrationType.user_install})
-    async def _map(self, ctx: std_commands.context.ApplicationContext, map_id: str = ""):
+    @commands.slash_command(
+        name="map",
+        category=cmn.Cats.REF,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
+    async def _map(
+        self, ctx: std_commands.context.ApplicationContext, map_id: str = ""
+    ):
         """Posts a ham-relevant map."""
         await ctx.send_response(embed=create_embed(ctx, "Map", self.maps, map_id))
 
 
-def create_embed(ctx: std_commands.context.ApplicationContext, not_found_name: str, db: cmn.ImagesGroup, img_id: str):
+def create_embed(
+    ctx: std_commands.context.ApplicationContext,
+    not_found_name: str,
+    db: cmn.ImagesGroup,
+    img_id: str,
+):
     """Creates an embed for the image and its metadata, or list available images in the group."""
     img_id = img_id.lower()
     embed = cmn.embed_factory_slash(ctx)
