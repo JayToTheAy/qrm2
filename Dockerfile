@@ -11,11 +11,15 @@ RUN \
     echo "**** update system and install packages ****" && \
     apt-get update && \
     apt-get install -y ${PKGS} && \
-    apt-get dist-clean && \
+    apt-get clean &&
+
+RUN \
     echo "**** install python packages ****" && \
     python -m venv botenv && \
     botenv/bin/pip install -U pip setuptools wheel && \
-    botenv/bin/pip install -r requirements.txt && \
+    botenv/bin/pip install -r requirements.txt
+
+RUN \
     echo "**** clean up ****" && \
     rm -rf \
         /root/.cache \
