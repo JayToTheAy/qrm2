@@ -3,7 +3,7 @@ FROM python:3.13.12-trixie
 COPY . /app
 WORKDIR /app
 
-ARG PKGS="libcairo2 libjpeg-turbo"
+ARG PKGS="libcairo2 libjpeg62-turbo"
 ARG UID 1000
 ARG GID 1000
 
@@ -11,7 +11,7 @@ RUN \
     echo "**** update system and install packages ****" && \
     apt-get update && \
     apt-get install -y ${PKGS} && \
-    apt-get clean &&
+    apt-get clean
 
 RUN \
     echo "**** install python packages ****" && \
