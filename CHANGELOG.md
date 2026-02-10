@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
 ## [Unreleased]
+### Changed
+- Updated Pycord to 2.6.0.
+- `run.sh` to respect the `VIRTUAL_ENV` environment variable.
+- Use Discord application emojis.
 
 ## [3.0.0-rc1] - 2026-02-09
 ### Changed
