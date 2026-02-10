@@ -67,7 +67,7 @@ This is the easiest method to run the bot with modifications.
 
 4. Copy the templates for `options.py` and `keys.py` to `data/`, and edit them.
 
-5. Run `docker-compose`:
+5. Run `docker compose`:
 
     ```none
     $ docker compose build --pull

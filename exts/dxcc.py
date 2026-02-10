@@ -7,12 +7,13 @@ Copyright (C) 2021-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 import threading
 from pathlib import Path
 
 from ctyparser import BigCty
 
+from discord import IntegrationType
+from discord import commands as std_commands
 from discord.ext import commands, tasks
 
 import common as cmn
@@ -22,6 +23,7 @@ cty_path = Path("./data/cty.json")
 
 
 class DXCCCog(commands.Cog):
+
     def __init__(self, bot):
         self.bot = bot
         try:
@@ -29,12 +31,21 @@ class DXCCCog(commands.Cog):
         except OSError:
             self.cty = BigCty()
 
-    @commands.command(name="dxcc", aliases=["dx"], category=cmn.Cats.LOOKUP)
-    async def _dxcc_lookup(self, ctx: commands.Context, query: str):
+    @commands.slash_command(
+        name="dxcc",
+        category=cmn.Cats.LOOKUP,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
+    async def _dxcc_lookup(
+        self,
+        ctx: std_commands.context.ApplicationContext,
+        query: str,
+        private: bool = False,
+    ):
         """Gets DXCC info about a callsign prefix."""
         query = query.upper()
         full_query = query
-        embed = cmn.embed_factory(ctx)
+        embed = cmn.embed_factory_slash(ctx)
         embed.title = "DXCC Info for "
         embed.description = f"*Last Updated: {self.cty.formatted_version}*"
         embed.colour = cmn.colours.bad
@@ -45,8 +56,10 @@ class DXCCCog(commands.Cog):
                 embed.add_field(name="CQ Zone", value=data["cq"])
                 embed.add_field(name="ITU Zone", value=data["itu"])
                 embed.add_field(name="Continent", value=data["continent"])
-                embed.add_field(name="Time Zone",
-                                value=f"+{data['tz']}" if data["tz"] > 0 else str(data["tz"]))
+                embed.add_field(
+                    name="Time Zone",
+                    value=f"+{data['tz']}" if data["tz"] > 0 else str(data["tz"]),
+                )
                 embed.title += query
                 embed.colour = cmn.colours.good
                 break
@@ -55,7 +68,7 @@ class DXCCCog(commands.Cog):
         else:
             embed.title += full_query + " not found"
             embed.colour = cmn.colours.bad
-        await ctx.send(embed=embed)
+        await ctx.send_response(embed=embed, ephemeral=private)
 
     @tasks.loop(hours=24)
     async def _update_cty(self):

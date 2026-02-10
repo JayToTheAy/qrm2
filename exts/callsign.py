@@ -7,13 +7,14 @@ Copyright (C) 2021-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 from typing import Dict
 
 import aiohttp
 from callsignlookuptools import QrzAsyncClient, CallsignLookupError, CallsignData
 
+from discord import IntegrationType
 from discord.ext import commands
+from discord import commands as std_commands
 
 import common as cmn
 
@@ -22,6 +23,7 @@ import data.keys as keys
 
 
 class QRZCog(commands.Cog):
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.qrz = None
@@ -34,52 +36,53 @@ class QRZCog(commands.Cog):
                         session_key = qrz_file.readline().strip()
                 except FileNotFoundError:
                     pass
-                self.qrz = QrzAsyncClient(username=keys.qrz_user, password=keys.qrz_pass, useragent="discord-qrm2",
-                                          session_key=session_key,
-                                          session=aiohttp.ClientSession(connector=bot.qrm.connector))
+                self.qrz = QrzAsyncClient(
+                    username=keys.qrz_user,
+                    password=keys.qrz_pass,
+                    useragent="discord-qrm2",
+                    session_key=session_key,
+                    session=aiohttp.ClientSession(connector=bot.qrm.connector),
+                )
         except AttributeError:
             pass
 
-    @commands.command(name="call", aliases=["qrz"], category=cmn.Cats.LOOKUP)
-    async def _qrz_lookup(self, ctx: commands.Context, callsign: str, *flags):
-        """Looks up a callsign on [QRZ.com](https://www.qrz.com/). Add `--link` to only link the QRZ page."""
-        flags = [f.lower() for f in flags]
-
-        if self.qrz is None or "--link" in flags:
-            if ctx.invoked_with == "qrz":
-                await ctx.send("⚠️ **Deprecated Command Alias**\n"
-                               f"This command has been renamed to `{ctx.prefix}call`!\n"
-                               "This alias will be removed in the next version.")
-            await ctx.send(f"http://qrz.com/db/{callsign}")
+    @commands.slash_command(
+        name="call",
+        category=cmn.Cats.LOOKUP,
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
+    async def _qrz_lookup_slash(
+        self,
+        ctx: std_commands.context.ApplicationContext,
+        callsign: str,
+        private: bool = False,
+    ):
+        if self.qrz is None:
+            await ctx.send_response(f"http://qrz.com/db/{callsign}", ephemeral=private)
             return
 
-        embed = cmn.embed_factory(ctx)
+        embed = cmn.embed_factory_slash(ctx)
         embed.title = f"QRZ Data for {callsign.upper()}"
 
-        if ctx.invoked_with == "qrz":
-            embed.description = ("⚠️ **Deprecated Command Alias**\n"
-                                 f"This command has been renamed to `{ctx.prefix}call`!\n"
-                                 "This alias will be removed in the next version.")
+        await ctx.defer(ephemeral=private)
+        try:
+            data = await self.qrz.search(callsign)
+        except CallsignLookupError as e:
+            embed.colour = cmn.colours.bad
+            embed.description = str(e)
+            await ctx.send_followup(embed=embed, ephemeral=private)
+            return
 
-        async with ctx.typing():
-            try:
-                data = await self.qrz.search(callsign)
-            except CallsignLookupError as e:
-                embed.colour = cmn.colours.bad
-                embed.description = str(e)
-                await ctx.send(embed=embed)
-                return
+        embed.title = f"QRZ Data for {data.callsign}"
+        embed.colour = cmn.colours.good
+        embed.url = data.url
+        if data.image is not None:
+            embed.set_thumbnail(url=data.image.url)
 
-            embed.title = f"QRZ Data for {data.callsign}"
-            embed.colour = cmn.colours.good
-            embed.url = data.url
-            if data.image is not None:
-                embed.set_thumbnail(url=data.image.url)
-
-            for title, val in qrz_process_info(data).items():
-                if val is not None and (val := str(val)):
-                    embed.add_field(name=title, value=val, inline=True)
-            await ctx.send(embed=embed)
+        for title, val in qrz_process_info(data).items():
+            if val is not None and (val := str(val)):
+                embed.add_field(name=title, value=val, inline=True)
+        await ctx.send_followup(embed=embed, ephemeral=private)
 
 
 def qrz_process_info(data: CallsignData) -> Dict:
@@ -108,14 +111,16 @@ def qrz_process_info(data: CallsignData) -> Dict:
 
     return {
         "Name": name,
-        "Country": data.address.country if data.address is not None else None,
+        "Country": data.dxcc.name if data.dxcc is not None else None,
         "Address": data.address,
         "Grid Square": data.grid,
         "County": data.county,
         "CQ Zone": data.cq_zone,
         "ITU Zone": data.itu_zone,
         "IOTA Designator": data.iota,
-        "Expires": f"{data.expire_date:%Y-%m-%d}" if data.expire_date is not None else None,
+        "Expires": f"{data.expire_date:%Y-%m-%d}"
+        if data.expire_date is not None
+        else None,
         "Aliases": ", ".join(data.aliases) if data.aliases else None,
         "Previous Callsign": data.prev_call,
         "License Class": data.lic_class,

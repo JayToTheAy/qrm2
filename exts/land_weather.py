@@ -7,7 +7,6 @@ Copyright (C) 2021-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 import re
 
 import aiohttp
@@ -24,7 +23,12 @@ class WeatherCog(commands.Cog):
         self.bot = bot
         self.session = aiohttp.ClientSession(connector=bot.qrm.connector)
 
-    @commands.group(name="weather", aliases=["wttr"], case_insensitive=True, category=cmn.Cats.WEATHER)
+    @commands.group(
+        name="weather",
+        aliases=["wttr"],
+        case_insensitive=True,
+        category=cmn.Cats.WEATHER,
+    )
     async def _weather_conditions(self, ctx: commands.Context):
         """Gets local weather conditions from [wttr.in](http://wttr.in/).
 
@@ -41,8 +45,12 @@ class WeatherCog(commands.Cog):
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
-    @_weather_conditions.command(name="forecast", aliases=["fc", "future"], category=cmn.Cats.WEATHER)
-    async def _weather_conditions_forecast(self, ctx: commands.Context, *, location: str):
+    @_weather_conditions.command(
+        name="forecast", aliases=["fc", "future"], category=cmn.Cats.WEATHER
+    )
+    async def _weather_conditions_forecast(
+        self, ctx: commands.Context, *, location: str
+    ):
         """Gets local weather forecast for the next three days from [wttr.in](http://wttr.in/).
         See help of the `weather` command for possible location types and options."""
         try:
@@ -121,7 +129,9 @@ class WeatherCog(commands.Cog):
         else:
             embed.title = f"Current METAR for {airport}"
 
-        embed.description = "Data from [aviationweather.gov](https://www.aviationweather.gov/)."
+        embed.description = (
+            "Data from [aviationweather.gov](https://www.aviationweather.gov/)."
+        )
         embed.colour = cmn.colours.good
         embed.description += f"\n\n```\n{metar}\n```"
 
@@ -150,7 +160,9 @@ class WeatherCog(commands.Cog):
             taf = await r.text()
 
         embed.title = f"Current TAF for {airport}"
-        embed.description = "Data from [aviationweather.gov](https://www.aviationweather.gov/)."
+        embed.description = (
+            "Data from [aviationweather.gov](https://www.aviationweather.gov/)."
+        )
         embed.colour = cmn.colours.good
         embed.description += f"\n\n```\n{taf}\n```"
 

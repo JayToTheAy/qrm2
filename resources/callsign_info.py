@@ -6,7 +6,6 @@ Copyright (C) 2019-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 from dataclasses import dataclass
 
 from .callsigninfos import (us, ca)
@@ -15,6 +14,7 @@ from .callsigninfos import (us, ca)
 @dataclass
 class CallsignInfoData:
     """Represents a country's callsign info"""
+
     title: str = ""
     desc: str = ""
     calls: str = ""

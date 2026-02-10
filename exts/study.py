@@ -6,7 +6,6 @@ Copyright (C) 2019-2023 classabbyamp, 0x5c
 SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
-
 import random
 import json
 from datetime import datetime
@@ -21,7 +20,13 @@ from resources import study
 
 
 class StudyCog(commands.Cog):
-    choices = {"A": cmn.emojis.a, "B": cmn.emojis.b, "C": cmn.emojis.c, "D": cmn.emojis.d, "E": cmn.emojis.e}
+    choices = {
+        "A": cmn.emojis.a,
+        "B": cmn.emojis.b,
+        "C": cmn.emojis.c,
+        "D": cmn.emojis.d,
+        "E": cmn.emojis.e,
+    }
     choices_inv = {y: x for x, y in choices.items()}
 
     def __init__(self, bot: commands.Bot):
@@ -30,8 +35,18 @@ class StudyCog(commands.Cog):
         self.source = "Data courtesy of [HamStudy.org](https://hamstudy.org/)"
         self.session = aiohttp.ClientSession(connector=bot.qrm.connector)
 
-    @commands.command(name="hamstudy", aliases=["rq", "randomquestion", "randomq"], category=cmn.Cats.STUDY)
-    async def _random_question(self, ctx: commands.Context, country: str = "", level: str = "", element: str = ""):
+    @commands.command(
+        name="hamstudy",
+        aliases=["rq", "randomquestion", "randomq"],
+        category=cmn.Cats.STUDY,
+    )
+    async def _random_question(
+        self,
+        ctx: commands.Context,
+        country: str = "",
+        level: str = "",
+        element: str = "",
+    ):
         """Gets a random question from [HamStudy's](https://hamstudy.org) question pools."""
         with ctx.typing():
             embed = cmn.embed_factory(ctx)
@@ -55,9 +70,15 @@ class StudyCog(commands.Cog):
                     embed.colour = cmn.colours.bad
                     for cty in study.pool_names:
                         levels = "`, `".join(study.pool_names[cty].keys())
-                        embed.add_field(name=f"**Country: `{cty}` {study.pool_emojis[cty]}**",
-                                        value=f"Levels: `{levels}`", inline=False)
-                    embed.add_field(name="**Random**", value="To select a random pool or country, use `random` or `r`")
+                        embed.add_field(
+                            name=f"**Country: `{cty}` {study.pool_emojis[cty]}**",
+                            value=f"Levels: `{levels}`",
+                            inline=False,
+                        )
+                    embed.add_field(
+                        name="**Random**",
+                        value="To select a random pool or country, use `random` or `r`",
+                    )
                     await ctx.send(embed=embed)
                     return
 
@@ -73,15 +94,23 @@ class StudyCog(commands.Cog):
                 embed.colour = cmn.colours.bad
                 for cty in study.pool_names:
                     levels = "`, `".join(study.pool_names[cty].keys())
-                    embed.add_field(name=f"**Country: `{cty}` {study.pool_emojis[cty]}**",
-                                    value=f"Levels: `{levels}`", inline=False)
-                embed.add_field(name="**Random**", value="To select a random pool or country, use `random` or `r`")
+                    embed.add_field(
+                        name=f"**Country: `{cty}` {study.pool_emojis[cty]}**",
+                        value=f"Levels: `{levels}`",
+                        inline=False,
+                    )
+                embed.add_field(
+                    name="**Random**",
+                    value="To select a random pool or country, use `random` or `r`",
+                )
                 await ctx.send(embed=embed)
                 return
 
             pools = await self.hamstudy_get_pools()
 
-            pool_matches = [p for p in pools.keys() if "_".join(p.split("_")[:-1]) == pool_name]
+            pool_matches = [
+                p for p in pools.keys() if "_".join(p.split("_")[:-1]) == pool_name
+            ]
 
             if len(pool_matches) > 0:
                 if len(pool_matches) == 1:
@@ -102,9 +131,15 @@ class StudyCog(commands.Cog):
                 embed.colour = cmn.colours.bad
                 for cty in study.pool_names:
                     levels = "`, `".join(study.pool_names[cty].keys())
-                    embed.add_field(name=f"**Country: `{cty}` {study.pool_emojis[cty]}**",
-                                    value=f"Levels: `{levels}`", inline=False)
-                embed.add_field(name="**Random**", value="To select a random pool or country, use `random` or `r`")
+                    embed.add_field(
+                        name=f"**Country: `{cty}` {study.pool_emojis[cty]}**",
+                        value=f"Levels: `{levels}`",
+                        inline=False,
+                    )
+                embed.add_field(
+                    name="**Random**",
+                    value="To select a random pool or country, use `random` or `r`",
+                )
                 await ctx.send(embed=embed)
                 return
 
@@ -131,7 +166,7 @@ class StudyCog(commands.Cog):
                 pool_section = random.choice(pool)["sections"]
             pool_questions = random.choice(pool_section)["questions"]
             question = random.choice(pool_questions)
-            answers = question['answers']
+            answers = question["answers"]
             answers_str = ""
             answers_str_bolded = ""
             for letter, ans in answers.items():
@@ -141,14 +176,20 @@ class StudyCog(commands.Cog):
                 else:
                     answers_str_bolded += f"{self.choices[letter]} {ans}\n"
 
-            embed.title = f"{study.pool_emojis[country]} {pool_meta['class']} {question['id']}"
+            embed.title = (
+                f"{study.pool_emojis[country]} {pool_meta['class']} {question['id']}"
+            )
             embed.description = self.source
             embed.add_field(name="Question", value=question["text"], inline=False)
             embed.add_field(name="Answers", value=answers_str, inline=False)
-            embed.add_field(name="To Answer",
-                            value=("Answer with reactions below. If not answered within 5 minutes,"
-                                   " the answer will be revealed."),
-                            inline=False)
+            embed.add_field(
+                name="To Answer",
+                value=(
+                    "Answer with reactions below. If not answered within 5 minutes,"
+                    " the answer will be revealed."
+                ),
+                inline=False,
+            )
             if "image" in question:
                 image_url = f"https://hamstudy.org/images/{pool_meta['year']}/{question['image']}"
                 embed.set_image(url=image_url)
@@ -160,27 +201,47 @@ class StudyCog(commands.Cog):
         await cmn.add_react(q_msg, cmn.emojis.question)
 
         def check(ev):
-            return (ev.user_id != self.bot.user.id
-                    and ev.message_id == q_msg.id
-                    and (str(ev.emoji) in self.choices.values() or str(ev.emoji) == cmn.emojis.question))
+            return (
+                ev.user_id != self.bot.user.id
+                and ev.message_id == q_msg.id
+                and (
+                    str(ev.emoji) in self.choices.values()
+                    or str(ev.emoji) == cmn.emojis.question
+                )
+            )
 
         try:
             ev = await self.bot.wait_for("raw_reaction_add", timeout=300.0, check=check)
         except asyncio.TimeoutError:
-            embed.set_field_at(1, name="Answers", value=answers_str_bolded, inline=False)
-            embed.set_field_at(2, name="Answer",
-                               value=(f"{cmn.emojis.stopwatch} "
-                                      f"**Timed out!** The correct answer was {self.choices[question['answer']]}"))
+            embed.set_field_at(
+                1, name="Answers", value=answers_str_bolded, inline=False
+            )
+            embed.set_field_at(
+                2,
+                name="Answer",
+                value=(
+                    f"{cmn.emojis.stopwatch} "
+                    f"**Timed out!** The correct answer was {self.choices[question['answer']]}"
+                ),
+            )
             embed.colour = cmn.colours.timeout
             await q_msg.edit(embed=embed)
         else:
             if str(ev.emoji) == cmn.emojis.question:
-                embed.set_field_at(1, name="Answers", value=answers_str_bolded, inline=False)
-                embed.set_field_at(2, name="Answer",
-                                   value=f"The correct answer was {self.choices[question['answer']]}", inline=False)
+                embed.set_field_at(
+                    1, name="Answers", value=answers_str_bolded, inline=False
+                )
+                embed.set_field_at(
+                    2,
+                    name="Answer",
+                    value=f"The correct answer was {self.choices[question['answer']]}",
+                    inline=False,
+                )
                 # only available in guilds, but it only makes sense there
                 if ev.member:
-                    embed.add_field(name="Answer Requested By", value=str(ev.member), inline=False)
+                    embed.add_field(
+                        name="Answer Requested By", value=str(ev.member), inline=False
+                    )
                 embed.colour = cmn.colours.timeout
                 await q_msg.edit(embed=embed)
             else:
@@ -198,22 +259,41 @@ class StudyCog(commands.Cog):
                         answers_str_checked += f" {ans}\n"
 
                 if self.choices[question["answer"]] == str(ev.emoji):
-                    embed.set_field_at(1, name="Answers", value=answers_str_checked, inline=False)
-                    embed.set_field_at(2, name="Answer", value=(f"{cmn.emojis.check_mark} "
-                                                                f"**Correct!** The answer was {ev.emoji}"))
+                    embed.set_field_at(
+                        1, name="Answers", value=answers_str_checked, inline=False
+                    )
+                    embed.set_field_at(
+                        2,
+                        name="Answer",
+                        value=(
+                            f"{cmn.emojis.check_mark} "
+                            f"**Correct!** The answer was {ev.emoji}"
+                        ),
+                    )
                     # only available in guilds, but it only makes sense there
                     if ev.member:
-                        embed.add_field(name="Answered By", value=str(ev.member), inline=False)
+                        embed.add_field(
+                            name="Answered By", value=str(ev.member), inline=False
+                        )
                     embed.colour = cmn.colours.good
                     await q_msg.edit(embed=embed)
                 else:
-                    embed.set_field_at(1, name="Answers", value=answers_str_checked, inline=False)
-                    embed.set_field_at(2, name="Answer",
-                                       value=(f"{cmn.emojis.x} **Incorrect!** The correct answer was "
-                                              f"{self.choices[question['answer']]}, not {ev.emoji}"))
+                    embed.set_field_at(
+                        1, name="Answers", value=answers_str_checked, inline=False
+                    )
+                    embed.set_field_at(
+                        2,
+                        name="Answer",
+                        value=(
+                            f"{cmn.emojis.x} **Incorrect!** The correct answer was "
+                            f"{self.choices[question['answer']]}, not {ev.emoji}"
+                        ),
+                    )
                     # only available in guilds, but it only makes sense there
                     if ev.member:
-                        embed.add_field(name="Answered By", value=str(ev.member), inline=False)
+                        embed.add_field(
+                            name="Answered By", value=str(ev.member), inline=False
+                        )
                     embed.colour = cmn.colours.bad
                     await q_msg.edit(embed=embed)
 

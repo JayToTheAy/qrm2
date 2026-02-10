@@ -32,7 +32,6 @@ owners_uids = (200102491231092736, 564766093051166729)
 # The extensions to load when running the bot.
 exts = [
     "base",
-    "ae7q",
     "callsign",
     "codes",
     "contests",
@@ -75,11 +74,13 @@ statuses = ["with lids on the air", "with fire"]
 status_tz = "US/Eastern"
 
 # The text to put in the "playing" status, with start and stop times
-time_statuses = [("with lids on 3.840", (00, 00), (6, 00)),
-                 ("with lids on 7.200", (6, 00), (10, 00)),
-                 ("with lids on 14.313", (10, 00), (18, 00)),
-                 ("with lids on 7.200", (18, 00), (20, 00)),
-                 ("with lids on 3.840", (20, 00), (23, 59))]
+time_statuses = [
+    ("with lids on 3.840", (00, 00), (6, 00)),
+    ("with lids on 7.200", (6, 00), (10, 00)),
+    ("with lids on 14.313", (10, 00), (18, 00)),
+    ("with lids on 7.200", (18, 00), (20, 00)),
+    ("with lids on 3.840", (20, 00), (23, 59)),
+]
 
 # append " | {display_prefix}help" to the Discord playing status
 show_help = False
@@ -89,7 +90,7 @@ show_help = False
 msg_reacts = {}
 
 # A :pika: emote's ID, None for no emote :c
-pika = 658733876176355338
+pika = 1271888780340756651
 
 # Base URL to a deployment of rTeX, which performs LaTeX rendering.
 rtex_instance = "https://rtex.probablyaweb.site/"
