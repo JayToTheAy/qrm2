@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
 ## [Unreleased]
+
+## [3.0.0-rc1] - 2026-02-09
 ### Changed
 - classabbyamp: `run.sh` to respect the `VIRTUAL_ENV` environment variable.
 - classabbyamp: Use Discord application emojis.
@@ -268,7 +270,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## 1.0.0 - 2019-07-31 [YANKED]
 
 
-[Unreleased]: https://github.com/miaowware/qrm2/compare/v2.9.2...HEAD
+[Unreleased]: https://github.com/jaytotheay/qrm2/compare/v2.9.2...HEAD
+[3.0.0-rc1]: github://github.com/jaytotheay/qrm2/releases/tag/v3.0.0-rc1
 [2.9.2]: https://github.com/miaowware/qrm2/releases/tag/v2.9.2
 [2.9.1]: https://github.com/miaowware/qrm2/releases/tag/v2.9.1
 [2.9.0]: https://github.com/miaowware/qrm2/releases/tag/v2.9.0
