@@ -6,9 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Changed
-- Updated Pycord to 2.6.0.
-- `run.sh` to respect the `VIRTUAL_ENV` environment variable.
-- Use Discord application emojis.
+
 
 ## [3.0.0-rc1] - 2026-02-09
 ### Changed
@@ -275,7 +273,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
 [Unreleased]: https://github.com/jaytotheay/qrm2/compare/v2.9.2...HEAD
-[3.0.0-rc1]: github://github.com/jaytotheay/qrm2/releases/tag/v3.0.0-rc1
+[3.0.0-rc1]: https://github.com/jaytotheay/qrm2/releases/tag/v3.0.0-rc1
 [2.9.2]: https://github.com/miaowware/qrm2/releases/tag/v2.9.2
 [2.9.1]: https://github.com/miaowware/qrm2/releases/tag/v2.9.1
 [2.9.0]: https://github.com/miaowware/qrm2/releases/tag/v2.9.0

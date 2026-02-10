@@ -10,19 +10,19 @@ import gridtools
 
 import discord.ext.commands as commands
 from discord import commands as std_commands
-from discord import IntegrationType
+from discord import IntegrationType, SlashCommandGroup
 
 import common as cmn
 
 
 class GridCog(commands.Cog):
+    grid_cat = SlashCommandGroup("grid", "Grid Calculation Operations")
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.slash_command(
-        name="grid",
-        category=cmn.Cats.CALC,
+    @grid_cat.command(
+        name="lat2grid",
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
     async def _grid_sq_lookup(
@@ -44,9 +44,8 @@ class GridCog(commands.Cog):
         embed.colour = cmn.colours.good
         await ctx.send_response(embed=embed)
 
-    @commands.slash_command(
+    @grid_cat.command(
         name="latlong",
-        category=cmn.Cats.CALC,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
     async def _location_lookup(
@@ -64,9 +63,8 @@ class GridCog(commands.Cog):
         embed.description = f"**{grid_obj.lat:.5f}, {grid_obj.long:.5f}**"
         await ctx.send_response(embed=embed)
 
-    @commands.slash_command(
+    @grid_cat.command(
         name="griddistance",
-        category=cmn.Cats.CALC,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
     async def _dist_lookup(

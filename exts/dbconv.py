@@ -11,7 +11,9 @@ from enum import Enum
 from typing import Optional
 from dataclasses import dataclass
 
+from discord import SlashCommandGroup, IntegrationType
 import discord.ext.commands as commands
+from discord import commands as std_commands
 
 import common as cmn
 from data import options as opt
@@ -64,16 +66,21 @@ class Unit:
 
 class DbConvCog(commands.Cog):
 
+    calc_cat = SlashCommandGroup("math", "Math Calculation Operations")
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(name="dbconv", aliases=["dbc"], category=cmn.Cats.CALC)
+    @commands.slash_command(
+        name="dbconv",
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
     async def _db_conv(
         self,
-        ctx: commands.Context,
+        ctx: std_commands.context.ApplicationContext,
         value: Optional[float] = None,
         unit_from: Optional[UnitConverter] = None,
-        unit_to: Optional[UnitConverter] = None,
+        unit_to: Optional[UnitConverter] = None,  # TODO: autocomplete
     ):
         """
         Convert between decibels and scalar values for voltage, power, and antenna gain.
@@ -83,7 +90,7 @@ class DbConvCog(commands.Cog):
         *Power:* fW, mW, W, kW, dBf, dBm, dBW, dBk
         *Antenna Gain:* dBi, dBd, dBq
         """
-        embed = cmn.embed_factory(ctx)
+        embed = cmn.embed_factory_slash(ctx)
         if value is not None and unit_from is not None and unit_to is not None:
             converted = convert(value, unit_from, unit_to)
 
@@ -123,7 +130,7 @@ class DbConvCog(commands.Cog):
                 value=f"`{opt.display_prefix}dbconv [value] [unit_from] [unit_to]`",
                 inline=False,
             )
-        await ctx.send(embed=embed)
+        await ctx.send_response(embed=embed)
 
 
 def setup(bot: commands.Bot):

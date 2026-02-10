@@ -6,5 +6,4 @@ beautifulsoup4
 pytz
 cairosvg
 httpx
-audioop-lts
 pydantic~=2.5

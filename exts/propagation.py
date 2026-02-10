@@ -29,13 +29,14 @@ class PropagationCog(commands.Cog):
         "https://services.swpc.noaa.gov/images/animations/d-rap/global/latest.png"
     )
 
+    prop_cat = discord.SlashCommandGroup("prop", "Propagation")
+
     def __init__(self, bot):
         self.bot = bot
         self.httpx_client: httpx.AsyncClient = bot.qrm.httpx_client
 
-    @commands.slash_command(
+    @prop_cat.command(
         name="muf",
-        category=cmn.Cats.WEATHER,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
     async def mufmap(self, ctx: std_commands.context.ApplicationContext):
@@ -54,9 +55,8 @@ class PropagationCog(commands.Cog):
         embed.set_image(url="attachment://muf_map.png")
         await ctx.send_followup(file=file, embed=embed)
 
-    @commands.slash_command(
+    @prop_cat.command(
         name="fof2",
-        category=cmn.Cats.WEATHER,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
     async def fof2map(self, ctx: std_commands.context.ApplicationContext):
@@ -75,9 +75,8 @@ class PropagationCog(commands.Cog):
         embed.set_image(url="attachment://fof2_map.png")
         await ctx.send_followup(file=file, embed=embed)
 
-    @commands.slash_command(
+    @prop_cat.command(
         name="grayline",
-        category=cmn.Cats.WEATHER,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
     async def grayline(self, ctx: std_commands.context.ApplicationContext):
@@ -89,9 +88,8 @@ class PropagationCog(commands.Cog):
         embed.set_image(url=self.gl_baseurl + date_params)
         await ctx.send_response(embed=embed)
 
-    @commands.slash_command(
+    @prop_cat.command(
         name="solarweather",
-        category=cmn.Cats.WEATHER,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
     async def solarweather(self, ctx: std_commands.context.ApplicationContext):
@@ -108,9 +106,8 @@ class PropagationCog(commands.Cog):
         embed.set_image(url="attachment://solarweather.png")
         await ctx.send_response(file=file, embed=embed)
 
-    @commands.slash_command(
+    @prop_cat.command(
         name="drap",
-        category=cmn.Cats.WEATHER,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
     async def drapmap(self, ctx: std_commands.context.ApplicationContext):

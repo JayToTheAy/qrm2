@@ -247,7 +247,7 @@ class BaseCog(commands.Cog):
         embed = cmn.embed_factory(ctx)
         embed.title = "qrm Changelog"
         embed.description = (
-            "For a full listing, visit [Github](https://"
+            "For a full listing, visit [GitHub](https://"
             "github.com/JayToTheAy/qrm2/blob/master/CHANGELOG.md)."
         )
         changelog = self.changelog

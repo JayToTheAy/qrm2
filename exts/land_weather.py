@@ -11,7 +11,11 @@ import re
 
 import aiohttp
 
+import discord
 import discord.ext.commands as commands
+from discord import commands as std_commands
+from discord import IntegrationType
+from discord import Option
 
 import common as cmn
 
@@ -23,99 +27,104 @@ class WeatherCog(commands.Cog):
         self.bot = bot
         self.session = aiohttp.ClientSession(connector=bot.qrm.connector)
 
-    @commands.group(
-        name="weather",
-        aliases=["wttr"],
-        case_insensitive=True,
-        category=cmn.Cats.WEATHER,
+    weather_cat = discord.SlashCommandGroup(
+        "weather", "Gets weather conditions from wttr.in."
     )
-    async def _weather_conditions(self, ctx: commands.Context):
-        """Gets local weather conditions from [wttr.in](http://wttr.in/).
 
-        *Supported location types:*
-        city name: `paris`
-        any location: `~Eiffel Tower`
-        Unicode name of any location in any language: `Москва`
-        airport code (3 letters): `muc`
-        domain name `@stackoverflow.com`
-        area codes: `12345`
-        GPS coordinates: `-78.46,106.79`
-
-        Add a `-c` or `-f` to use Celcius or Fahrenheit: `-c YSC`"""
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.command)
-
-    @_weather_conditions.command(
-        name="forecast", aliases=["fc", "future"], category=cmn.Cats.WEATHER
+    @weather_cat.command(
+        name="forecast",
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
     async def _weather_conditions_forecast(
-        self, ctx: commands.Context, *, location: str
+        self,
+        ctx: std_commands.context.ApplicationContext,
+        location: Option(
+            str,
+            "City name, landmark, airport code, domain, IP, \
+area code, or GPS coords. See https://wttr.in/:help",
+        ),  # noqa: F722 # type: ignore
+        scale: str = "",
     ):
-        """Gets local weather forecast for the next three days from [wttr.in](http://wttr.in/).
-        See help of the `weather` command for possible location types and options."""
-        try:
-            units_arg = re.search(self.wttr_units_regex, location).group(1)
-        except AttributeError:
-            units_arg = ""
-        if units_arg.lower() == "f":
+        """Gets local weather forecast for the next three days from wttr.in."""
+
+        if scale == "f":  # TODO: change this out for OptionChoices
             units = "u"
-        elif units_arg.lower() == "c":
+        elif scale == "c":
             units = "m"
         else:
             units = ""
 
         loc = self.wttr_units_regex.sub("", location).strip()
 
-        embed = cmn.embed_factory(ctx)
+        embed = cmn.embed_factory_slash(ctx)
         embed.title = f"Weather Forecast for {loc}"
         embed.description = "Data from [wttr.in](http://wttr.in/)."
         embed.colour = cmn.colours.good
 
         loc = loc.replace(" ", "+")
         embed.set_image(url=f"http://wttr.in/{loc}_{units}pnFQ.png")
-        await ctx.send(embed=embed)
+        await ctx.send_response(embed=embed)
 
-    @_weather_conditions.command(name="now", aliases=["n"], category=cmn.Cats.WEATHER)
-    async def _weather_conditions_now(self, ctx: commands.Context, *, location: str):
-        """Gets current local weather conditions from [wttr.in](http://wttr.in/).
-        See help of the `weather` command for possible location types and options."""
-        try:
-            units_arg = re.search(self.wttr_units_regex, location).group(1)
-        except AttributeError:
-            units_arg = ""
-        if units_arg.lower() == "f":
+    @weather_cat.command(
+        name="now",
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
+    async def _weather_conditions_now(
+        self,
+        ctx: std_commands.context.ApplicationContext,
+        location: Option(
+            str,
+            "City name, landmark, airport code, domain, IP, \
+area code, or GPS coords. See https://wttr.in/:help",
+        ),  # noqa: F722 # type: ignore
+        scale: str = "",
+    ):
+        """Gets current local weather conditions from wttr.in."""
+
+        if scale == "f":
             units = "u"
-        elif units_arg.lower() == "c":
+        elif scale == "c":
             units = "m"
         else:
             units = ""
 
         loc = self.wttr_units_regex.sub("", location).strip()
 
-        embed = cmn.embed_factory(ctx)
+        embed = cmn.embed_factory_slash(ctx)
         embed.title = f"Current Weather for {loc}"
-        embed.description = "Data from [wttr.in](http://wttr.in/)."
+        embed.description = "Data from [wttr.in](https://wttr.in/:help)."
         embed.colour = cmn.colours.good
 
         loc = loc.replace(" ", "+")
         embed.set_image(url=f"http://wttr.in/{loc}_0{units}pnFQ.png")
-        await ctx.send(embed=embed)
 
-    @commands.command(name="metar", category=cmn.Cats.WEATHER)
-    async def metar(self, ctx: commands.Context, airport: str, hours: int = 0):
-        """Gets current raw METAR (Meteorological Terminal Aviation Routine Weather Report) for an airport. \
-        Optionally, a number of hours can be given to show a number of hours of historical METAR data.
+        await ctx.send_response(embed=embed)
 
-        Airports should be given as an \
-        [ICAO code](https://en.wikipedia.org/wiki/List_of_airports_by_IATA_and_ICAO_code)."""
+    @commands.slash_command(
+        name="metar",
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
+    async def metar(
+        self,
+        ctx: std_commands.context.ApplicationContext,
+        airport: Option(
+            str,
+            "Four character ICAO code identifying an airport.",  # noqa: F722
+            required=True,
+            min_length=4,
+            max_length=4,
+        ),  # type: ignore
+        hours: Option(int, "Hours of historical data to pull", default=0, max_value=500),  # noqa: F722 # type: ignore
+    ):
+        """Gets current raw METAR (Meteorological Terminal Aviation Routine Weather Report) for an airport."""
 
-        embed = cmn.embed_factory(ctx)
+        embed = cmn.embed_factory_slash(ctx)
         airport = airport.upper()
 
         if not re.fullmatch(r"\w(\w|\d){2,3}", airport):
             embed.title = "Invalid airport given!"
             embed.colour = cmn.colours.bad
-            await ctx.send(embed=embed)
+            await ctx.send_response(embed=embed)
             return
 
         url = f"https://aviationweather.gov/api/data/metar?ids={airport}&format=raw&taf=false&hours={hours}"
@@ -135,22 +144,32 @@ class WeatherCog(commands.Cog):
         embed.colour = cmn.colours.good
         embed.description += f"\n\n```\n{metar}\n```"
 
-        await ctx.send(embed=embed)
+        await ctx.send_response(embed=embed)
 
-    @commands.command(name="taf", category=cmn.Cats.WEATHER)
-    async def taf(self, ctx: commands.Context, airport: str):
-        """Gets forecasted raw TAF (Terminal Aerodrome Forecast) data for an airport. Includes the latest METAR data.
+    @commands.slash_command(
+        name="taf",
+        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
+    )
+    async def taf(
+        self,
+        ctx: std_commands.context.ApplicationContext,
+        airport: Option(
+            str,
+            "Four character ICAO code identifying an airport.",  # noqa: F722
+            required=True,
+            min_length=4,
+            max_length=4,
+        ),  # type: ignore
+    ):
+        """Gets forecasted Terminal Aerodrome Forecast data for an airport. Includes the latest METAR data."""
 
-        Airports should be given as an \
-        [ICAO code](https://en.wikipedia.org/wiki/List_of_airports_by_IATA_and_ICAO_code)."""
-
-        embed = cmn.embed_factory(ctx)
+        embed = cmn.embed_factory_slash(ctx)
         airport = airport.upper()
 
         if not re.fullmatch(r"\w(\w|\d){2,3}", airport):
             embed.title = "Invalid airport given!"
             embed.colour = cmn.colours.bad
-            await ctx.send(embed=embed)
+            await ctx.send_response(embed=embed)
             return
 
         url = f"https://aviationweather.gov/api/data/taf?ids={airport}&format=raw&metar=true"
@@ -166,7 +185,7 @@ class WeatherCog(commands.Cog):
         embed.colour = cmn.colours.good
         embed.description += f"\n\n```\n{taf}\n```"
 
-        await ctx.send(embed=embed)
+        await ctx.send_response(embed=embed)
 
 
 def setup(bot: commands.Bot):
