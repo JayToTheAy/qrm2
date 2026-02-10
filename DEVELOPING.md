@@ -7,7 +7,7 @@
 1. [Fork this repo][1] into your own GitHub namespace.
 1. Make sure the `master` branch is up to date, then make yourself a new branch with a descriptive name.
 1. Once the forked repo is cloned and on the proper branch, you can set up the development environment.
-    1. Install python 3.9 or higher.
+    1. Install python 3.13 or higher.
     1. Install `libcairo` and `libjpeg`. Package names may vary by distro or OS.
     1. Run `make dev-install`.
        This should install everything you need to develop and run qrm.

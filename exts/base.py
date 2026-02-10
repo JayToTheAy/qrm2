@@ -182,11 +182,6 @@ class BaseCog(commands.Cog):
                         self.commit = bf.readline().strip()[:7]
         else:
             self.commit = ""
-        self.donation_links = {
-            "Ko-Fi": "https://ko-fi.com/miaowware",
-            "LiberaPay": "https://liberapay.com/miaowware",
-            "GitHub Sponsors": "https://github.com/sponsors/classabbyamp",
-        }
         self.bot_invite = ""
         if self.bot.user:
             self.bot_invite = (
@@ -217,12 +212,14 @@ class BaseCog(commands.Cog):
         embed.add_field(
             name="Contributing", value=inspect.cleandoc(info.contributing), inline=False
         )
-        embed.add_field(name="Official Server", value=info.bot_server, inline=False)
-        embed.add_field(
-            name="Donate",
-            value="\n".join(f"{k}: {v}" for k, v in self.donation_links.items()),
-            inline=False,
-        )
+        if info.bot_server:
+            embed.add_field(name="Official Server", value=info.bot_server, inline=False)
+        if info.donating:
+            embed.add_field(
+                name="Donate",
+                value=info.donating,
+                inline=False,
+            )
         if opt.enable_invite_cmd and (await self.bot.application_info()).bot_public:
             embed.add_field(
                 name="Invite qrm to Your Server", value=self.bot_invite, inline=False
@@ -251,7 +248,7 @@ class BaseCog(commands.Cog):
         embed.title = "qrm Changelog"
         embed.description = (
             "For a full listing, visit [Github](https://"
-            "github.com/miaowware/qrm2/blob/master/CHANGELOG.md)."
+            "github.com/JayToTheAy/qrm2/blob/master/CHANGELOG.md)."
         )
         changelog = self.changelog
         vers = list(changelog.keys())
@@ -290,18 +287,19 @@ class BaseCog(commands.Cog):
         embed.description = inspect.cleandoc(info.issue_tracker)
         await ctx.send(embed=embed)
 
-    @commands.command(name="donate", aliases=["tip"], category=cmn.BoltCats.INFO)
-    async def _donate(self, ctx: commands.Context):
-        """Shows ways to help support development of the bot via donations."""
-        embed = cmn.embed_factory(ctx)
-        embed.title = "Help Support qrm's Development!"
-        embed.description = (
-            "Donations are always appreciated, and help with server and infrastructure costs."
-            "\nThank you for your support!"
-        )
-        for title, url in self.donation_links.items():
-            embed.add_field(name=title, value=url, inline=False)
-        await ctx.send(embed=embed)
+    # Comment out donations for now since we aren't taking them
+    # @commands.command(name="donate", aliases=["tip"], category=cmn.BoltCats.INFO)
+    # async def _donate(self, ctx: commands.Context):
+    #     """Shows ways to help support development of the bot via donations."""
+    #     embed = cmn.embed_factory(ctx)
+    #     embed.title = "Help Support qrm's Development!"
+    #     embed.description = (
+    #         "Donations are always appreciated, and help with server and infrastructure costs."
+    #         "\nThank you for your support!"
+    #     )
+    #     if info.donating:
+    #         embed.add_field(name="Links", value=info.donating, inline=False)
+    #     await ctx.send(embed=embed)
 
     @commands.command(
         name="invite", enabled=opt.enable_invite_cmd, category=cmn.BoltCats.INFO

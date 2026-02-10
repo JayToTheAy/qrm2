@@ -6,9 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Changed
-- Updated Pycord to 2.6.0.
-- `run.sh` to respect the `VIRTUAL_ENV` environment variable.
-- Use Discord application emojis.
+- classabbyamp: `run.sh` to respect the `VIRTUAL_ENV` environment variable.
+- classabbyamp: Use Discord application emojis.
+- jaytotheay: Updated Pycord to 2.7.1.
+- jaytotheay: Updated the bot to Python 3.13.2.
+- jaytotheay: Changed bot to use slash commands in many places.
+- jaytotheay: Changed over bot "about" data to refer to qrm3.
+### Removed
+- jaytotheay: Removed prefix commands where slash commands were added instead.
+- jaytotheay: Removed donation info.
+- jaytotheay: Removed ae7q ext.
+### Fixed
+- jaytotheay: Issue where `/drap` did not embed properly
 
 
 ## [2.9.2] - 2023-12-15
