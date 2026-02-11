@@ -69,7 +69,7 @@ class TimeCog(commands.Cog):
     )
     async def miltime(self, ctx: std_commands.context.ApplicationContext):
         """Prints the current time in all 25 military time zones."""
-        time = ctx.message.created_at  # TODO: test
+        time = datetime.now()
         embed = cmn.embed_factory_slash(ctx)
         embed.title = f"{cmn.emojis.clock} Military Time Zones Now"
         embed.colour = cmn.colours.good
