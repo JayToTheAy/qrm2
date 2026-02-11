@@ -32,7 +32,7 @@ class TexCog(commands.Cog):
         category=cmn.Cats.UTILS,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
-    async def tex(self, ctx: std_commands.context.ApplicationContext, *, expr: str):
+    async def tex(self, ctx: std_commands.context.ApplicationContext, expr: str):
         """Renders a LaTeX expression.
 
         In paragraph mode by default. To render math, add `$` around math expressions.
@@ -75,7 +75,7 @@ class TexCog(commands.Cog):
 
         embed = cmn.embed_factory_slash(ctx)
         embed.title = "LaTeX Expression"
-        embed.description = "Rendered by [rTeX](https://rtex.probablyaweb.site/)."
+        embed.description = f"Rendered by [rTeX]({opt.rtex_instance}."
         embed.set_image(url="attachment://tex.png")
         await ctx.send_followup(file=discord.File(png_buffer, "tex.png"), embed=embed)
 
