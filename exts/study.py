@@ -14,8 +14,7 @@ import asyncio
 import aiohttp
 
 import discord.ext.commands as commands
-from discord import IntegrationType, Option, AutocompleteContext
-from discord import commands as std_commands
+from discord import IntegrationType, Option, AutocompleteContext, ApplicationContext
 from discord.utils import basic_autocomplete
 
 import common as cmn
@@ -54,7 +53,7 @@ class StudyCog(commands.Cog):
     )
     async def _random_question(
         self,
-        ctx: std_commands.context.ApplicationContext,
+        ctx: ApplicationContext,
         country: Option(str, choices=study.pool_names.keys()) = "",  # type: ignore
         level: Option(str, autocomplete=basic_autocomplete(get_level_options)) = "",  # type: ignore
         element: str = "",
@@ -62,7 +61,7 @@ class StudyCog(commands.Cog):
         """Gets a random question from HamStudy's question pools."""
 
         await ctx.defer()
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
 
         country = country.lower()
         level = level.lower()

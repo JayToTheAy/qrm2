@@ -13,9 +13,7 @@ import aiohttp
 
 import discord
 import discord.ext.commands as commands
-from discord import commands as std_commands
-from discord import IntegrationType
-from discord import Option
+from discord import IntegrationType, ApplicationContext, Option
 
 import common as cmn
 
@@ -36,7 +34,7 @@ class WeatherCog(commands.Cog):
     @weather_cat.command(name="forecast")
     async def _weather_conditions_forecast(
         self,
-        ctx: std_commands.context.ApplicationContext,
+        ctx: ApplicationContext,
         location: Option(
             str,
             "City name, landmark, airport code, domain, IP, \
@@ -55,7 +53,7 @@ area code, or GPS coords. See https://wttr.in/:help",
 
         loc = self.wttr_units_regex.sub("", location).strip()
 
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = f"Weather Forecast for {loc}"
         embed.description = "Data from [wttr.in](http://wttr.in/)."
         embed.colour = cmn.colours.good
@@ -69,7 +67,7 @@ area code, or GPS coords. See https://wttr.in/:help",
     )
     async def _weather_conditions_now(
         self,
-        ctx: std_commands.context.ApplicationContext,
+        ctx: ApplicationContext,
         location: Option(
             str,
             "City name, landmark, airport code, domain, IP, \
@@ -88,7 +86,7 @@ area code, or GPS coords. See https://wttr.in/:help",
 
         loc = self.wttr_units_regex.sub("", location).strip()
 
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = f"Current Weather for {loc}"
         embed.description = "Data from [wttr.in](https://wttr.in/:help)."
         embed.colour = cmn.colours.good
@@ -104,7 +102,7 @@ area code, or GPS coords. See https://wttr.in/:help",
     )
     async def metar(
         self,
-        ctx: std_commands.context.ApplicationContext,
+        ctx: ApplicationContext,
         airport: Option(
             str,
             "Four character ICAO code identifying an airport.",
@@ -116,7 +114,7 @@ area code, or GPS coords. See https://wttr.in/:help",
     ):
         """Gets current raw METAR (Meteorological Terminal Aviation Routine Weather Report) for an airport."""
 
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         airport = airport.upper()
 
         if not re.fullmatch(r"\w(\w|\d){2,3}", airport):
@@ -150,7 +148,7 @@ area code, or GPS coords. See https://wttr.in/:help",
     )
     async def taf(
         self,
-        ctx: std_commands.context.ApplicationContext,
+        ctx: ApplicationContext,
         airport: Option(
             str,
             "Four character ICAO code identifying an airport.",
@@ -161,7 +159,7 @@ area code, or GPS coords. See https://wttr.in/:help",
     ):
         """Gets forecasted Terminal Aerodrome Forecast data for an airport. Includes the latest METAR data."""
 
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         airport = airport.upper()
 
         if not re.fullmatch(r"\w(\w|\d){2,3}", airport):

@@ -21,11 +21,9 @@ import httpx
 
 import discord
 import discord.ext.commands as commands
-from discord import commands as std_commands
 from discord import Emoji, PartialEmoji
 
 import data.options as opt
-
 
 __all__ = [
     "colours",
@@ -159,7 +157,7 @@ class BotHTTPError(Exception):
 class GlobalChannelConverter(commands.IDConverter):
     """Converter to get any bot-acessible channel by ID/mention (global), or name (in current guild only)."""
 
-    async def convert(self, ctx: commands.Context, argument: str):
+    async def convert(self, ctx: commands.context.Context, argument: str):
         bot = ctx.bot
         guild = ctx.guild
         match = self._get_id_match(argument) or re.match(r"<#([0-9]+)>$", argument)
@@ -183,7 +181,9 @@ class GlobalChannelConverter(commands.IDConverter):
 # --- Helper functions ---
 
 
-def embed_factory(ctx: commands.Context) -> discord.Embed:
+def embed_factory(
+    ctx: Union[commands.Context, discord.ApplicationContext]
+) -> discord.Embed:
     """Creates an embed with neutral colour and standard footer."""
     embed = discord.Embed(timestamp=datetime.now(timezone.utc), colour=colours.neutral)
     if ctx.author:
@@ -191,16 +191,10 @@ def embed_factory(ctx: commands.Context) -> discord.Embed:
     return embed
 
 
-# TODO: combine this with above by just making ctx a union type idk
-def embed_factory_slash(ctx: std_commands.context.ApplicationContext) -> discord.Embed:
-    embed = discord.Embed(timestamp=datetime.now(timezone.utc), colour=colours.neutral)
-    if ctx.author:
-        embed.set_footer(text=str(ctx.author), icon_url=str(ctx.author.avatar))
-    return embed
-
-
 def error_embed_factory(
-    ctx: commands.Context, exception: Exception, debug_mode: bool
+    ctx: Union[commands.Context, discord.ApplicationContext],
+    exception: Exception,
+    debug_mode: bool,
 ) -> discord.Embed:
     """Creates an Error embed."""
     if debug_mode:
@@ -210,24 +204,6 @@ def error_embed_factory(
     else:
         fmtd_ex = traceback.format_exception_only(exception.__class__, exception)
     embed = embed_factory(ctx)
-    embed.title = "⚠️ Error"
-    embed.description = "```\n" + "\n".join(fmtd_ex) + "```"
-    embed.colour = colours.bad
-    return embed
-
-
-# TODO: combine this with above by just making ctx a union type idk
-def error_embed_factory_slash(
-    ctx: std_commands.context.ApplicationContext, exception: Exception, debug_mode: bool
-) -> discord.Embed:
-    """Creates an Error embed."""
-    if debug_mode:
-        fmtd_ex = traceback.format_exception(
-            exception.__class__, exception, exception.__traceback__
-        )
-    else:
-        fmtd_ex = traceback.format_exception_only(exception.__class__, exception)
-    embed = embed_factory_slash(ctx)
     embed.title = "⚠️ Error"
     embed.description = "```\n" + "\n".join(fmtd_ex) + "```"
     embed.colour = colours.bad

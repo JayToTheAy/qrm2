@@ -10,8 +10,7 @@ SPDX-License-Identifier: LiLiQ-Rplus-1.1
 import json
 
 import discord.ext.commands as commands
-from discord import IntegrationType
-from discord import commands as std_commands
+from discord import IntegrationType, ApplicationContext
 
 import common as cmn
 
@@ -32,12 +31,10 @@ class HamCog(commands.Cog):
         category=cmn.Cats.CODES,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
-    async def _qcode_lookup(
-        self, ctx: std_commands.context.ApplicationContext, qcode: str
-    ):
+    async def _qcode_lookup(self, ctx: ApplicationContext, qcode: str):
         """Looks up the meaning of a Q Code."""
         qcode = qcode.upper()
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         if qcode in self.qcodes:
             embed.title = qcode
             embed.description = self.qcodes[qcode]
@@ -52,9 +49,7 @@ class HamCog(commands.Cog):
         category=cmn.Cats.CODES,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
-    async def _phonetics_lookup(
-        self, ctx: std_commands.context.ApplicationContext, msg: str
-    ):
+    async def _phonetics_lookup(self, ctx: ApplicationContext, msg: str):
         """Returns NATO phonetics for a word or phrase."""
         result = ""
         for char in msg.lower():
@@ -63,7 +58,7 @@ class HamCog(commands.Cog):
             else:
                 result += char
             result += " "
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = f"Phonetics for {msg}"
         embed.description = result.title()
         embed.colour = cmn.colours.good
@@ -74,9 +69,9 @@ class HamCog(commands.Cog):
         category=cmn.Cats.CODES,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
-    async def _weight(self, ctx: std_commands.context.ApplicationContext, msg: str):
+    async def _weight(self, ctx: ApplicationContext, msg: str):
         """Calculates the phonetic weight of a callsign or message."""
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         msg = msg.upper()
         weight = 0
         for char in msg:

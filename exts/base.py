@@ -14,7 +14,7 @@ import pathlib
 
 import discord
 import discord.ext.commands as commands
-from discord import commands as std_commands
+from discord import ApplicationContext, IntegrationType
 from discord.ext.commands import Command, CommandError
 
 import info
@@ -232,13 +232,13 @@ class BaseCog(commands.Cog):
     @commands.slash_command(
         name="ping",
         integration_types={
-            discord.IntegrationType.guild_install,
-            discord.IntegrationType.user_install,
+            IntegrationType.guild_install,
+            IntegrationType.user_install,
         },
     )
-    async def _ping(self, ctx: std_commands.context.ApplicationContext):
+    async def _ping(self, ctx: ApplicationContext):
         """Shows the current latency to the discord endpoint."""
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         content = ""
         content = ctx.message.author.mention if random.random() < 0.05 else ""
         embed.title = "🏓 **Pong!**"
@@ -248,15 +248,13 @@ class BaseCog(commands.Cog):
     @commands.slash_command(
         name="changelog",
         integration_types={
-            discord.IntegrationType.guild_install,
-            discord.IntegrationType.user_install,
+            IntegrationType.guild_install,
+            IntegrationType.user_install,
         },
     )
-    async def _changelog(
-        self, ctx: std_commands.context.ApplicationContext, version: str = "latest"
-    ):
+    async def _changelog(self, ctx: ApplicationContext, version: str = "latest"):
         """Shows what has changed in a bot version. Defaults to the latest version."""
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = "qrm Changelog"
         embed.description = (
             "For a full listing, visit [GitHub](https://"
@@ -294,13 +292,13 @@ class BaseCog(commands.Cog):
     @commands.slash_command(
         name="issue",
         integration_types={
-            discord.IntegrationType.guild_install,
-            discord.IntegrationType.user_install,
+            IntegrationType.guild_install,
+            IntegrationType.user_install,
         },
     )
-    async def _issue(self, ctx: std_commands.context.ApplicationContext):
+    async def _issue(self, ctx: ApplicationContext):
         """Shows how to create a bug report or feature request about the bot."""
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = "Found a bug? Have a feature request?"
         embed.description = inspect.cleandoc(info.issue_tracker)
         await ctx.send_response(embed=embed)
@@ -308,15 +306,15 @@ class BaseCog(commands.Cog):
     @commands.slash_command(
         name="invite",
         integration_types={
-            discord.IntegrationType.guild_install,
-            discord.IntegrationType.user_install,
+            IntegrationType.guild_install,
+            IntegrationType.user_install,
         },
     )
-    async def _invite(self, ctx: std_commands.context.ApplicationContext):
+    async def _invite(self, ctx: ApplicationContext):
         """Generates a link to invite the bot to a server."""
         if not (await self.bot.application_info()).bot_public:
             raise commands.DisabledCommand
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = "Invite qrm to Your Server!"
         embed.description = self.bot_invite
         await ctx.send_response(embed=embed)

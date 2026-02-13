@@ -7,8 +7,7 @@ SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
 import discord.ext.commands as commands
-from discord import commands as std_commands
-from discord import IntegrationType
+from discord import IntegrationType, ApplicationContext
 
 import common as cmn
 from resources import callsign_info
@@ -25,12 +24,10 @@ class PrefixesCog(commands.Cog):
         category=cmn.Cats.REF,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
-    async def _vanity_prefixes(
-        self, ctx: std_commands.context.ApplicationContext, country: str = ""
-    ):
+    async def _vanity_prefixes(self, ctx: ApplicationContext, country: str = ""):
         """Lists valid callsign prefixes for different countries."""
         country = country.lower()
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         if country not in self.pfxs:
             desc = "Possible arguments are:\n"
             for key, val in self.pfxs.items():

@@ -9,8 +9,7 @@ SPDX-License-Identifier: LiLiQ-Rplus-1.1
 import gridtools
 
 import discord.ext.commands as commands
-from discord import commands as std_commands
-from discord import IntegrationType, SlashCommandGroup
+from discord import IntegrationType, SlashCommandGroup, ApplicationContext
 
 import common as cmn
 
@@ -28,9 +27,7 @@ class GridCog(commands.Cog):
     @grid_cat.command(
         name="lat2grid",
     )
-    async def _grid_sq_lookup(
-        self, ctx: std_commands.context.ApplicationContext, lat: float, lon: float
-    ):
+    async def _grid_sq_lookup(self, ctx: ApplicationContext, lat: float, lon: float):
         (
             """Calculates the grid square for latitude and longitude coordinates."""
             """\n\nCoordinates should be in decimal format, with negative being latitude South and longitude West."""
@@ -39,7 +36,7 @@ class GridCog(commands.Cog):
         latlong = gridtools.LatLong(lat, lon)
         grid = gridtools.Grid(latlong)
 
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = (
             f"Maidenhead Grid Locator for {latlong.lat:.5f}, {latlong.long:.5f}"
         )
@@ -50,16 +47,14 @@ class GridCog(commands.Cog):
     @grid_cat.command(
         name="latlong",
     )
-    async def _location_lookup(
-        self, ctx: std_commands.context.ApplicationContext, grid: str
-    ):
+    async def _location_lookup(self, ctx: ApplicationContext, grid: str):
         (
             """Calculates the latitude and longitude for the center of a grid locator."""
             """\n\nTo calculate the grid locator from a latitude and longitude, use `/grid`"""
         )
         grid_obj = gridtools.Grid(grid)
 
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = f"Latitude and Longitude for {grid_obj}"
         embed.colour = cmn.colours.good
         embed.description = f"**{grid_obj.lat:.5f}, {grid_obj.long:.5f}**"
@@ -68,9 +63,7 @@ class GridCog(commands.Cog):
     @grid_cat.command(
         name="distance",
     )
-    async def _dist_lookup(
-        self, ctx: std_commands.context.ApplicationContext, grid1: str, grid2: str
-    ):
+    async def _dist_lookup(self, ctx: ApplicationContext, grid1: str, grid2: str):
         """Calculates the great circle distance and azimuthal bearing between two grid locators."""
         g1 = gridtools.Grid(grid1)
         g2 = gridtools.Grid(grid2)
@@ -78,7 +71,7 @@ class GridCog(commands.Cog):
         dist, bearing = gridtools.grid_distance(g1, g2)
         dist_mi = 0.6214 * dist
 
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = f"Great Circle Distance and Bearing from {g1} to {g2}"
         embed.description = f"**Distance:** {dist:.1f} km ({dist_mi:.1f} mi)\n**Bearing:** {bearing:.1f}°"
         embed.colour = cmn.colours.good

@@ -11,9 +11,8 @@ from enum import Enum
 from typing import Optional
 from dataclasses import dataclass
 
-from discord import SlashCommandGroup, IntegrationType
+from discord import SlashCommandGroup, IntegrationType, ApplicationContext
 import discord.ext.commands as commands
-from discord import commands as std_commands
 
 import common as cmn
 from data import options as opt
@@ -22,6 +21,7 @@ from data import options as opt
 # not sure why but UnitConverter and Unit need to be defined before DbConvCog and convert()
 class UnitConverter(commands.Converter):
 
+    # dead code?
     async def convert(self, ctx: commands.Context, argument: str):
         is_db = None
         mult = None
@@ -77,7 +77,7 @@ class DbConvCog(commands.Cog):
     )
     async def _db_conv(
         self,
-        ctx: std_commands.context.ApplicationContext,
+        ctx: ApplicationContext,
         value: Optional[float] = None,
         unit_from: Optional[UnitConverter] = None,
         unit_to: Optional[UnitConverter] = None,  # TODO: autocomplete
@@ -90,7 +90,7 @@ class DbConvCog(commands.Cog):
         *Power:* fW, mW, W, kW, dBf, dBm, dBW, dBk
         *Antenna Gain:* dBi, dBd, dBq
         """
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         if value is not None and unit_from is not None and unit_to is not None:
             converted = convert(value, unit_from, unit_to)
 

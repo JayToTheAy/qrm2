@@ -9,8 +9,7 @@ SPDX-License-Identifier: LiLiQ-Rplus-1.1
 import aiohttp
 
 import discord.ext.commands as commands
-from discord import commands as std_commands
-from discord import IntegrationType
+from discord import IntegrationType, ApplicationContext
 
 import common as cmn
 
@@ -30,9 +29,7 @@ class ImageCog(commands.Cog):
         category=cmn.Cats.REF,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
-    async def _bandcharts(
-        self, ctx: std_commands.context.ApplicationContext, chart_id: str = ""
-    ):
+    async def _bandcharts(self, ctx: ApplicationContext, chart_id: str = ""):
         """Gets the frequency allocations chart for a given country."""
         await ctx.send_response(
             embed=create_embed(ctx, "Bandchart", self.bandcharts, chart_id)
@@ -43,22 +40,20 @@ class ImageCog(commands.Cog):
         category=cmn.Cats.REF,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
-    async def _map(
-        self, ctx: std_commands.context.ApplicationContext, map_id: str = ""
-    ):
+    async def _map(self, ctx: ApplicationContext, map_id: str = ""):
         """Posts a ham-relevant map."""
         await ctx.send_response(embed=create_embed(ctx, "Map", self.maps, map_id))
 
 
 def create_embed(
-    ctx: std_commands.context.ApplicationContext,
+    ctx: ApplicationContext,
     not_found_name: str,
     db: cmn.ImagesGroup,
     img_id: str,
 ):
     """Creates an embed for the image and its metadata, or list available images in the group."""
     img_id = img_id.lower()
-    embed = cmn.embed_factory_slash(ctx)
+    embed = cmn.embed_factory(ctx)
     if img_id not in db:
         desc = "Possible arguments are:\n"
         for key, img in db.items():

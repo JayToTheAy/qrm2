@@ -14,8 +14,7 @@ import httpx
 
 import discord
 import discord.ext.commands as commands
-from discord import commands as std_commands
-from discord import IntegrationType
+from discord import IntegrationType, ApplicationContext
 
 import common as cmn
 
@@ -42,7 +41,7 @@ class PropagationCog(commands.Cog):
     @prop_cat.command(
         name="muf",
     )
-    async def mufmap(self, ctx: std_commands.context.ApplicationContext):
+    async def mufmap(self, ctx: ApplicationContext):
         """Shows a world map of the Maximum Usable Frequency (MUF)."""
         await ctx.defer()
 
@@ -52,7 +51,7 @@ class PropagationCog(commands.Cog):
             raise cmn.BotHTTPError(resp)
         out = BytesIO(cairosvg.svg2png(bytestring=await resp.aread()))  # type: ignore # TODO: fix
         file = discord.File(out, "muf_map.png")
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = "Maximum Usable Frequency Map"
         embed.description = "Image from [prop.kc2g.com](https://prop.kc2g.com/)\nData sources listed on the page."
         embed.set_image(url="attachment://muf_map.png")
@@ -61,7 +60,7 @@ class PropagationCog(commands.Cog):
     @prop_cat.command(
         name="fof2",
     )
-    async def fof2map(self, ctx: std_commands.context.ApplicationContext):
+    async def fof2map(self, ctx: ApplicationContext):
         """Shows a world map of the Critical Frequency (foF2)."""
         await ctx.defer()
 
@@ -71,7 +70,7 @@ class PropagationCog(commands.Cog):
             raise cmn.BotHTTPError(resp)
         out = BytesIO(cairosvg.svg2png(bytestring=await resp.aread()))  # type: ignore
         file = discord.File(out, "fof2_map.png")
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = "Critical Frequency (foF2) Map"
         embed.description = "Image from [prop.kc2g.com](https://prop.kc2g.com/)\nData sources listed on the page."
         embed.set_image(url="attachment://fof2_map.png")
@@ -80,9 +79,9 @@ class PropagationCog(commands.Cog):
     @prop_cat.command(
         name="grayline",
     )
-    async def grayline(self, ctx: std_commands.context.ApplicationContext):
+    async def grayline(self, ctx: ApplicationContext):
         """Gets a map of the current greyline, where HF propagation is the best."""
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = "Current Greyline Conditions"
         embed.colour = cmn.colours.good
         date_params = f"&date=1&utc={datetime.now(timezone.utc):%Y-%m-%d+%H:%M:%S}"
@@ -92,7 +91,7 @@ class PropagationCog(commands.Cog):
     @prop_cat.command(
         name="solarweather",
     )
-    async def solarweather(self, ctx: std_commands.context.ApplicationContext):
+    async def solarweather(self, ctx: ApplicationContext):
         """Gets a solar weather report."""
         resp = await self.httpx_client.get(self.n0nbh_sun_url)
         await resp.aclose()
@@ -100,7 +99,7 @@ class PropagationCog(commands.Cog):
             raise cmn.BotHTTPError(resp)
         img = BytesIO(await resp.aread())
         file = discord.File(img, "solarweather.png")
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = "☀️ Current Solar Weather"
         embed.colour = cmn.colours.good
         embed.set_image(url="attachment://solarweather.png")
@@ -109,9 +108,9 @@ class PropagationCog(commands.Cog):
     @prop_cat.command(
         name="drap",
     )
-    async def drapmap(self, ctx: std_commands.context.ApplicationContext):
+    async def drapmap(self, ctx: ApplicationContext):
         """Gets the current D-RAP map for radio blackouts"""
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = "D Region Absorption Predictions (D-RAP) Map"
         embed.colour = cmn.colours.good
         embed.description = (

@@ -9,8 +9,7 @@ SPDX-License-Identifier: LiLiQ-Rplus-1.1
 import json
 
 import discord.ext.commands as commands
-from discord import commands as std_commands
-from discord import IntegrationType, SlashCommandGroup
+from discord import IntegrationType, SlashCommandGroup, ApplicationContext
 
 import common as cmn
 
@@ -34,7 +33,7 @@ class MorseCog(commands.Cog):
         name="morsify",
         category=cmn.Cats.CODES,
     )
-    async def _morse(self, ctx: std_commands.context.ApplicationContext, msg: str):
+    async def _morse(self, ctx: ApplicationContext, msg: str):
         """Converts ASCII to international morse code."""
         result = ""
         for char in msg.upper():
@@ -43,7 +42,7 @@ class MorseCog(commands.Cog):
             except KeyError:
                 result += "<?>"
             result += " "
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = f"Morse Code for {msg}"
         embed.description = "**`" + result + "`**"
         embed.colour = cmn.colours.good
@@ -53,7 +52,7 @@ class MorseCog(commands.Cog):
         name="unmorsify",
         category=cmn.Cats.CODES,
     )
-    async def _unmorse(self, ctx: std_commands.context.ApplicationContext, msg: str):
+    async def _unmorse(self, ctx: ApplicationContext, msg: str):
         """Converts international morse code to ASCII."""
         result = ""
         msg0 = msg
@@ -66,7 +65,7 @@ class MorseCog(commands.Cog):
                 except KeyError:
                     result += "<?>"
             result += " "
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = f"ASCII for {msg0}"
         embed.description = "`" + result + "`"
         embed.colour = cmn.colours.good
@@ -76,9 +75,9 @@ class MorseCog(commands.Cog):
         name="weight",
         category=cmn.Cats.CODES,
     )
-    async def _weight(self, ctx: std_commands.context.ApplicationContext, msg: str):
+    async def _weight(self, ctx: ApplicationContext, msg: str):
         """Calculates the CW weight of a callsign or message."""
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         msg = msg.upper()
         weight = 0
         for char in msg:

@@ -7,8 +7,7 @@ SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
 import discord.ext.commands as commands
-import discord.commands as std_commands
-from discord import IntegrationType, Embed
+from discord import IntegrationType, Embed, ApplicationContext
 
 import common as cmn
 
@@ -20,11 +19,9 @@ class ContestCalendarCog(commands.Cog):
         category=cmn.Cats.LOOKUP,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
-    async def _contests(
-        self, ctx: std_commands.context.ApplicationContext, private: bool = False
-    ):
+    async def _contests(self, ctx: ApplicationContext, private: bool = False):
         embed = Embed()
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = "Contest Calendar"
         embed.description = (
             "*We are currently rewriting the old, Chrome-based `contests` command. In the meantime, "

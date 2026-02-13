@@ -12,9 +12,8 @@ from typing import Dict
 import aiohttp
 from callsignlookuptools import QrzAsyncClient, CallsignLookupError, CallsignData
 
-from discord import IntegrationType
+from discord import IntegrationType, ApplicationContext
 from discord.ext import commands
-from discord import commands as std_commands
 
 import common as cmn
 
@@ -53,7 +52,7 @@ class QRZCog(commands.Cog):
     )
     async def _qrz_lookup_slash(
         self,
-        ctx: std_commands.context.ApplicationContext,
+        ctx: ApplicationContext,
         callsign: str,
         private: bool = False,
     ):
@@ -61,7 +60,7 @@ class QRZCog(commands.Cog):
             await ctx.send_response(f"http://qrz.com/db/{callsign}", ephemeral=private)
             return
 
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = f"QRZ Data for {callsign.upper()}"
 
         await ctx.defer(ephemeral=private)

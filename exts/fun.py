@@ -10,8 +10,7 @@ import json
 import random
 
 import discord.ext.commands as commands
-from discord import commands as std_commands
-from discord import IntegrationType, SlashCommandGroup
+from discord import IntegrationType, SlashCommandGroup, ApplicationContext
 
 import common as cmn
 
@@ -33,12 +32,12 @@ class FunCog(commands.Cog):
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
 
-    @std_commands.slash_command(
+    @commands.slash_command(
         name="xkcd",
         category=cmn.Cats.FUN,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
-    async def _xkcd(self, ctx: std_commands.context.ApplicationContext, number: int):
+    async def _xkcd(self, ctx: ApplicationContext, number: int):
         """Looks up an xkcd comic by number."""
         await ctx.send_response("http://xkcd.com/" + str(number))
 
@@ -46,7 +45,7 @@ class FunCog(commands.Cog):
         name="tar",
         category=cmn.Cats.FUN,
     )
-    async def _tar(self, ctx: std_commands.context.ApplicationContext):
+    async def _tar(self, ctx: ApplicationContext):
         """Returns xkcd: tar."""
         await ctx.send_response("http://xkcd.com/1168")
 
@@ -54,7 +53,7 @@ class FunCog(commands.Cog):
         name="standards",
         category=cmn.Cats.FUN,
     )
-    async def _standards(self, ctx: std_commands.context.ApplicationContext):
+    async def _standards(self, ctx: ApplicationContext):
         """Returns xkcd: Standards."""
         await ctx.send_response("http://xkcd.com/927")
 
@@ -62,9 +61,9 @@ class FunCog(commands.Cog):
         name="worksplit",
         category=cmn.Cats.FUN,
     )
-    async def _worksplit(self, ctx: std_commands.context.ApplicationContext):
+    async def _worksplit(self, ctx: ApplicationContext):
         """Posts "Work split you lids"."""
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = "Work Split, You Lids!"
         embed.set_image(url=opt.resources_url + self.imgs["worksplit"])
         await ctx.send_response(embed=embed)
@@ -73,9 +72,7 @@ class FunCog(commands.Cog):
         name="funetics",
         category=cmn.Cats.FUN,
     )
-    async def _funetics_lookup(
-        self, ctx: std_commands.context.ApplicationContext, *, msg: str
-    ):
+    async def _funetics_lookup(self, ctx: ApplicationContext, msg: str):
         """Generates fun/wacky phonetics for a word or phrase."""
         result = ""
         for char in msg.lower():
@@ -86,7 +83,7 @@ class FunCog(commands.Cog):
             else:
                 result += char
             result += " "
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = f"Funetics for {msg}"
         embed.description = result.title()
         embed.colour = cmn.colours.good

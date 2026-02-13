@@ -12,8 +12,7 @@ from pathlib import Path
 
 from ctyparser import BigCty
 
-from discord import IntegrationType
-from discord import commands as std_commands
+from discord import IntegrationType, ApplicationContext
 from discord.ext import commands, tasks
 
 import common as cmn
@@ -38,14 +37,14 @@ class DXCCCog(commands.Cog):
     )
     async def _dxcc_lookup(
         self,
-        ctx: std_commands.context.ApplicationContext,
+        ctx: ApplicationContext,
         query: str,
         private: bool = False,
     ):
         """Gets DXCC info about a callsign prefix."""
         query = query.upper()
         full_query = query
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = "DXCC Info for "
         embed.description = f"*Last Updated: {self.cty.formatted_version}*"
         embed.colour = cmn.colours.bad

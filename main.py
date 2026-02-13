@@ -265,9 +265,14 @@ async def on_application_command_error(
     ctx: discord.ApplicationContext, err: discord.DiscordException
 ):
     if isinstance(err, commands.UserInputError):
-        await ctx.respond("An unknown user input error occurred. Please try again.", ephemeral=True)
+        await ctx.respond(
+            "An unknown user input error occurred. Please try again.", ephemeral=True
+        )
     elif isinstance(err, commands.CheckFailure):
-        await ctx.respond("A Check Failure occurred. You may not have permission to use this command.", ephemeral=True)
+        await ctx.respond(
+            "A Check Failure occurred. You may not have permission to use this command.",
+            ephemeral=True,
+        )
     elif isinstance(err, commands.DisabledCommand):
         await ctx.respond("This command has been disabled.", ephemeral=True)
     elif isinstance(err, (commands.CommandInvokeError, commands.ConversionError)):
@@ -278,7 +283,7 @@ async def on_application_command_error(
         )
         traceback.print_exception(type(err), err, err.__traceback__, file=sys.stderr)
 
-        embed = cmn.error_embed_factory_slash(ctx, err.original, bot.qrm.debug_mode)
+        embed = cmn.error_embed_factory(ctx, err.original, bot.qrm.debug_mode)
         embed.description += f"\n`{type(err).__name__}`"  # type: ignore
         await ctx.respond(embed=embed, ephemeral=True)
     else:
@@ -288,7 +293,9 @@ async def on_application_command_error(
             file=sys.stderr,
         )
         traceback.print_exception(type(err), err, err.__traceback__, file=sys.stderr)
-        await ctx.respond("An unknown error occurred while processing your command.", ephemeral=True)
+        await ctx.respond(
+            "An unknown error occurred while processing your command.", ephemeral=True
+        )
 
 
 # --- Tasks ---

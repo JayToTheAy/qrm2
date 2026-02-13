@@ -12,8 +12,7 @@ from urllib.parse import urljoin
 
 import discord
 import discord.ext.commands as commands
-from discord import commands as std_commands
-from discord import IntegrationType
+from discord import IntegrationType, ApplicationContext
 
 import common as cmn
 import data.options as opt
@@ -32,7 +31,7 @@ class TexCog(commands.Cog):
         category=cmn.Cats.UTILS,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
-    async def tex(self, ctx: std_commands.context.ApplicationContext, expr: str):
+    async def tex(self, ctx: ApplicationContext, expr: str):
         """Renders a LaTeX expression.
 
         In paragraph mode by default. To render math, add `$` around math expressions.
@@ -54,7 +53,7 @@ class TexCog(commands.Cog):
 
             render_result = await r.json()
             if render_result["status"] != "success":
-                embed = cmn.embed_factory_slash(ctx)
+                embed = cmn.embed_factory(ctx)
                 embed.title = "LaTeX Rendering Failed!"
                 embed.description = (
                     "Here are some common reasons:\n"
@@ -73,7 +72,7 @@ class TexCog(commands.Cog):
         ) as r:
             png_buffer = BytesIO(await r.read())
 
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = "LaTeX Expression"
         embed.description = f"Rendered by [rTeX]({opt.rtex_instance}."
         embed.set_image(url="attachment://tex.png")

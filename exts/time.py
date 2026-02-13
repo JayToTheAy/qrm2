@@ -9,8 +9,7 @@ SPDX-License-Identifier: LiLiQ-Rplus-1.1
 from datetime import datetime, timedelta, timezone
 
 import discord.ext.commands as commands
-from discord import commands as std_commands
-from discord import IntegrationType
+from discord import IntegrationType, ApplicationContext
 
 import common as cmn
 
@@ -52,11 +51,11 @@ class TimeCog(commands.Cog):
         category=cmn.Cats.TIME,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
-    async def _utc_lookup(self, ctx: std_commands.context.ApplicationContext):
+    async def _utc_lookup(self, ctx: ApplicationContext):
         """Returns the current time in UTC."""
         now = datetime.now(timezone.utc)
         result = "**" + now.strftime("%Y-%m-%d %H:%M") + "Z**"
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = "The current time is:"
         embed.description = result
         embed.colour = cmn.colours.good
@@ -67,10 +66,10 @@ class TimeCog(commands.Cog):
         category=cmn.Cats.TIME,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
-    async def miltime(self, ctx: std_commands.context.ApplicationContext):
+    async def miltime(self, ctx: ApplicationContext):
         """Prints the current time in all 25 military time zones."""
         time = datetime.now()
-        embed = cmn.embed_factory_slash(ctx)
+        embed = cmn.embed_factory(ctx)
         embed.title = f"{cmn.emojis.clock} Military Time Zones Now"
         embed.colour = cmn.colours.good
         embed.description = "```"
