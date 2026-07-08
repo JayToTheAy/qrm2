@@ -74,6 +74,7 @@ class RigpixCog(commands.Cog):
                 dimensions = table_dict.get('Dimensions (W*H*D):', '').replace("*", "\\*")
                 weight = table_dict.get('Weight:')
                 rf_power_output = table_dict.get('RF output power:')
+                manufactured = table_dict.get('Manufactured:')
 
                 return create_embed(
                     ctx,
@@ -85,7 +86,8 @@ class RigpixCog(commands.Cog):
                     power_consumption=power_consumption,
                     dimensions=dimensions,
                     weight=weight,
-                    rf_power_output=rf_power_output
+                    rf_power_output=rf_power_output,
+                    manfuactured = manufactured
                 )
 
     # endregion
@@ -100,7 +102,8 @@ def create_embed(
     power_consumption: str | None,
     dimensions: str | None,
     weight: str | None,
-    rf_power_output: str | None
+    rf_power_output: str | None,
+    manufactured: str | None
 ) -> Embed:
     """Creates an embed for the model and its metadata."""
     embed = cmn.embed_factory(ctx)
@@ -114,6 +117,7 @@ def create_embed(
     embed.add_field(name="Dimensions", value=dimensions, inline=True)
     embed.add_field(name="Weight", value=weight, inline=True)
     embed.add_field(name="RF Power Output", value=rf_power_output, inline=True)
+    embed.add_field(name="Manufactured", value=manufactured, inline=True)
 
     return embed
 
