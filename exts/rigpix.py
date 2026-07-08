@@ -1,5 +1,5 @@
 """
-Conversion extension for qrm
+Rigpix extension for qrm
 ---
 Copyright (C) 2026 jaytotheay
 
@@ -34,8 +34,9 @@ class RigpixCog(commands.Cog):
     )
     async def _radio_slash(self, ctx: ApplicationContext, brand: str = "", radio: str = ""):
         """Gets the frequency allocations chart for a given country."""
+        embed = await self._radio_core(ctx, brand, radio)
         await ctx.send_response(
-            embed=create_embed(ctx, "Radio", self.radios, brand)
+            embed=embed
         )
 
     @commands.command(
@@ -43,6 +44,10 @@ class RigpixCog(commands.Cog):
     )
     async def _radio_prefix(self, ctx: commands.Context, brand: str = "", radio: str = ""):
         """Looks up a radio make & model on RigPix and returns its specifications."""
+        embed = await self._radio_core(ctx, brand, radio)
+        await ctx.send(embed=embed)
+
+    async def _radio_core(self, ctx: Union[ApplicationContext, commands.Context], brand: str = "", radio: str = "") -> Embed:
         radio_link = self.radios[brand.lower()][radio]
 
         async with self.session.get(radio_link) as resp:
@@ -70,7 +75,6 @@ class RigpixCog(commands.Cog):
                 frequency_range = table_dict.get('Frequency range:')
                 modes = table_dict.get('Mode:')
                 power_consumption = table_dict.get('Current drain / power consumption:')
-                print(power_consumption)
                 dimensions = table_dict.get('Dimensions (W*H*D):', '').replace("*", "\\*")
                 weight = table_dict.get('Weight:')
                 rf_power_output = table_dict.get('RF output power:')
@@ -89,7 +93,7 @@ class RigpixCog(commands.Cog):
                 embed.add_field(name="Weight", value=weight, inline=True)
                 embed.add_field(name="RF Power Output", value=rf_power_output, inline=True)
 
-                await ctx.send(embed=embed)
+                return embed
 
     # endregion
 
