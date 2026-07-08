@@ -98,15 +98,12 @@ class BrandsGroup(collections.abc.Mapping):
     """Represents a group of radio brands, loaded from a radios.json file."""
 
     def __init__(self, file_path):
-        self._brands = {}
+        self._brands: dict[str, dict] = {}
         self.path = file_path
 
         with open(file_path, "r") as file:
-            brands: dict = json.load(file)
-        for key, branddata in brands.items():
-            with open(branddata, "r") as brandfile:
-                brandradios = json.load(brandfile)
-                self._brands[key] = brandradios
+            brand_to_radios: dict[str, dict] = json.load(file)
+            self._brands = brand_to_radios
 
     # Wrappers to implement dict-like functionality
     def __len__(self):

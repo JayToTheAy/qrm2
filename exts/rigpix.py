@@ -7,8 +7,12 @@ SPDX-License-Identifier: LiLiQ-Rplus-1.1
 """
 
 import aiohttp
-from discord import IntegrationType, ApplicationContext, Embed
+from discord import IntegrationType, ApplicationContext, Embed, Option
 from discord.ext import commands
+
+from urllib.parse import urljoin
+from typing import Union
+from bs4 import BeautifulSoup
 
 import common as cmn
 
@@ -18,51 +22,76 @@ class RigpixCog(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.radios = cmn.
-        self.bandcharts = cmn.ImagesGroup(cmn.paths.resources / "bandcharts.1.json")
-        self.maps = cmn.ImagesGroup(cmn.paths.resources / "maps.1.json")
+        self.radios = cmn.BrandsGroup(cmn.paths.resources / "radios.1.json")
         self.session = aiohttp.ClientSession(connector=bot.qrm.connector)
 
-    # region bandchart
+    # region radio
 
     @commands.slash_command(
-        name="bandchart",
+        name="radio",
         category=cmn.Cats.REF,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
-    async def _bandcharts_slash(self, ctx: ApplicationContext, chart_id: str = ""):
+    async def _radio_slash(self, ctx: ApplicationContext, brand: str = "", radio: str = ""):
         """Gets the frequency allocations chart for a given country."""
         await ctx.send_response(
-            embed=create_embed(ctx, "Bandchart", self.bandcharts, chart_id)
+            embed=create_embed(ctx, "Radio", self.radios, brand)
         )
 
     @commands.command(
-        name="bandchart", aliases=["bandplan", "plan", "bands"], category=cmn.Cats.REF
+        name="radio", aliases=["equipment", "gear"], category=cmn.Cats.REF
     )
-    async def _bandcharts_prefix(self, ctx: commands.Context, chart_id: str = ""):
-        """Gets the frequency allocations chart for a given country."""
-        await ctx.send(embed=create_embed(ctx, "Bandchart", self.bandcharts, chart_id))
+    async def _radio_prefix(self, ctx: commands.Context, brand: str = "", radio: str = ""):
+        """Looks up a radio make & model on RigPix and returns its specifications."""
+        radio_link = self.radios[brand.lower()][radio]
+
+        async with self.session.get(radio_link) as resp:
+                if resp.status != 200:
+                    raise cmn.BotHTTPError(resp)
+                resp_body = await resp.read()
+                soup = BeautifulSoup(resp_body, 'html.parser')
+                for br in soup.find_all('br'):
+                    br.replace_with('\n')
+
+                images = soup.find_all('img')
+                image, image_url = None, None
+                if len(images) > 4:
+                    image = str(images[4])
+                    image_url = urljoin(radio_link, image[image.find("src=") + 5:image.find('"/>')])
+
+                specification_table = soup.find_all('table')[3]
+                rows = specification_table.find_all('tr')
+
+                table_dict = dict()
+                for row in rows:
+                    columns = row.find_all('td')
+                    table_dict[columns[0].text if 0 < len(columns) else ''] = columns[1].text if 1 < len(columns) else ''
+
+                frequency_range = table_dict.get('Frequency range:')
+                modes = table_dict.get('Mode:')
+                power_consumption = table_dict.get('Current drain / power consumption:')
+                print(power_consumption)
+                dimensions = table_dict.get('Dimensions (W*H*D):', '').replace("*", "\\*")
+                weight = table_dict.get('Weight:')
+                rf_power_output = table_dict.get('RF output power:')
+
+                # embed
+                
+                embed = cmn.embed_factory(ctx)
+                embed.title = f"RigPix Data for {radio}"
+                embed.colour = cmn.colours.good
+                embed.url = radio_link
+                embed.thumbnail = image_url
+                embed.add_field(name="Frequency Range", value=frequency_range, inline=True)
+                embed.add_field(name="Mode", value=modes, inline=True)
+                embed.add_field(name="Power Consumption", value=power_consumption, inline=True)
+                embed.add_field(name="Dimensions", value=dimensions, inline=True)
+                embed.add_field(name="Weight", value=weight, inline=True)
+                embed.add_field(name="RF Power Output", value=rf_power_output, inline=True)
+
+                await ctx.send(embed=embed)
 
     # endregion
-
-    # region map
-
-    @commands.slash_command(
-        name="map",
-        category=cmn.Cats.REF,
-        integration_types={IntegrationType.guild_install, IntegrationType.user_install},
-    )
-    async def _map_slash(self, ctx: ApplicationContext, map_id: str = ""):
-        """Posts a ham-relevant map."""
-        await ctx.send_response(embed=create_embed(ctx, "Map", self.maps, map_id))
-
-    @commands.command(name="map", category=cmn.Cats.REF)
-    async def _map_prefix(self, ctx: commands.Context, map_id: str = ""):
-        """Posts a ham-relevant map."""
-        await ctx.send(embed=create_embed(ctx, "Map", self.maps, map_id))
-
-    # endregion
-
 
 def create_embed(
     ctx: Union[ApplicationContext, commands.Context],
