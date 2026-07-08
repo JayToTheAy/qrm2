@@ -87,7 +87,7 @@ class RigpixCog(commands.Cog):
                     dimensions=dimensions,
                     weight=weight,
                     rf_power_output=rf_power_output,
-                    manfuactured = manufactured
+                    manufactured=manufactured
                 )
 
     # endregion
