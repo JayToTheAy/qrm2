@@ -16,8 +16,6 @@ from bs4 import BeautifulSoup
 
 import common as cmn
 
-import data.options as opt
-
 class RigpixCog(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
@@ -25,32 +23,30 @@ class RigpixCog(commands.Cog):
         self.radios = cmn.BrandsGroup(cmn.paths.resources / "radios.1.json")
         self.session = aiohttp.ClientSession(connector=bot.qrm.connector)
 
-    # region radio
+    # region rigpix
 
     @commands.slash_command(
-        name="radio",
+        name="rigpix",
         category=cmn.Cats.REF,
         integration_types={IntegrationType.guild_install, IntegrationType.user_install},
     )
-    async def _radio_slash(self, ctx: ApplicationContext, brand: str = "", radio: str = ""):
-        """Gets the frequency allocations chart for a given country."""
-        embed = await self._radio_core(ctx, brand, radio)
-        await ctx.send_response(
-            embed=embed
-        )
+    async def _rigpix_slash(self, ctx: ApplicationContext, brand: str = "", model: str = ""):
+        """Looks up a equipment by make & model on RigPix and returns its specifications."""
+        embed = await self._rigpix_core(ctx, brand, model)
+        await ctx.send_response(embed=embed)
 
     @commands.command(
-        name="radio", aliases=["equipment", "gear"], category=cmn.Cats.REF
+        name="rigpix", aliases=["equipment", "gear", "radio"], category=cmn.Cats.REF
     )
-    async def _radio_prefix(self, ctx: commands.Context, brand: str = "", radio: str = ""):
-        """Looks up a radio make & model on RigPix and returns its specifications."""
-        embed = await self._radio_core(ctx, brand, radio)
+    async def _rigpix_prefix(self, ctx: commands.Context, brand: str = "", model: str = ""):
+        """Looks up equipment by make & model on RigPix and returns its specifications."""
+        embed = await self._rigpix_core(ctx, brand, model)
         await ctx.send(embed=embed)
 
-    async def _radio_core(self, ctx: Union[ApplicationContext, commands.Context], brand: str = "", radio: str = "") -> Embed:
-        radio_link = self.radios[brand.lower()][radio]
+    async def _rigpix_core(self, ctx: Union[ApplicationContext, commands.Context], brand: str = "", model: str = "") -> Embed:
+        model_link = self.radios[brand.lower()][model]
 
-        async with self.session.get(radio_link) as resp:
+        async with self.session.get(model_link) as resp:
                 if resp.status != 200:
                     raise cmn.BotHTTPError(resp)
                 resp_body = await resp.read()
@@ -62,7 +58,7 @@ class RigpixCog(commands.Cog):
                 image, image_url = None, None
                 if len(images) > 4:
                     image = str(images[4])
-                    image_url = urljoin(radio_link, image[image.find("src=") + 5:image.find('"/>')])
+                    image_url = urljoin(model_link, image[image.find("src=") + 5:image.find('"/>')])
 
                 specification_table = soup.find_all('table')[3]
                 rows = specification_table.find_all('tr')
@@ -79,49 +75,46 @@ class RigpixCog(commands.Cog):
                 weight = table_dict.get('Weight:')
                 rf_power_output = table_dict.get('RF output power:')
 
-                # embed
-                
-                embed = cmn.embed_factory(ctx)
-                embed.title = f"RigPix Data for {radio}"
-                embed.colour = cmn.colours.good
-                embed.url = radio_link
-                embed.thumbnail = image_url
-                embed.add_field(name="Frequency Range", value=frequency_range, inline=True)
-                embed.add_field(name="Mode", value=modes, inline=True)
-                embed.add_field(name="Power Consumption", value=power_consumption, inline=True)
-                embed.add_field(name="Dimensions", value=dimensions, inline=True)
-                embed.add_field(name="Weight", value=weight, inline=True)
-                embed.add_field(name="RF Power Output", value=rf_power_output, inline=True)
-
-                return embed
+                return create_embed(
+                    ctx,
+                    model=model,
+                    model_link=model_link,
+                    image_url=image_url,
+                    frequency_range=frequency_range,
+                    modes=modes,
+                    power_consumption=power_consumption,
+                    dimensions=dimensions,
+                    weight=weight,
+                    rf_power_output=rf_power_output
+                )
 
     # endregion
 
 def create_embed(
     ctx: Union[ApplicationContext, commands.Context],
-    not_found_name: str,
-    db: cmn.ImagesGroup,
-    img_id: str,
+    model: str | None,
+    model_link: str | None,
+    image_url: str | None,
+    frequency_range: str | None,
+    modes: str | None,
+    power_consumption: str | None,
+    dimensions: str | None,
+    weight: str | None,
+    rf_power_output: str | None
 ) -> Embed:
-    """Creates an embed for the image and its metadata, or list available images in the group."""
-    img_id = img_id.lower()
+    """Creates an embed for the model and its metadata."""
     embed = cmn.embed_factory(ctx)
-    if img_id not in db:
-        desc = "Possible arguments are:\n"
-        for key, img in db.items():
-            desc += f"`{key}`: {img.name}{('  ' + img.emoji if img.emoji else '')}\n"
-        embed.title = f"{not_found_name} Not Found!"
-        embed.description = desc
-        embed.colour = cmn.colours.bad
-        return embed
-    metadata = db[img_id]
-    if metadata.description:
-        embed.description = metadata.description
-    if metadata.source:
-        embed.add_field(name="Source", value=metadata.source)
-    embed.title = metadata.long_name + ("  " + metadata.emoji if metadata.emoji else "")
+    embed.title = f"RigPix Data for {model}"
     embed.colour = cmn.colours.good
-    embed.set_image(url=opt.resources_url + metadata.filename)
+    embed.url = model_link
+    embed.thumbnail = image_url
+    embed.add_field(name="Frequency Range", value=frequency_range, inline=True)
+    embed.add_field(name="Mode", value=modes, inline=True)
+    embed.add_field(name="Power Consumption", value=power_consumption, inline=True)
+    embed.add_field(name="Dimensions", value=dimensions, inline=True)
+    embed.add_field(name="Weight", value=weight, inline=True)
+    embed.add_field(name="RF Power Output", value=rf_power_output, inline=True)
+
     return embed
 
 
