@@ -94,6 +94,34 @@ paths = SimpleNamespace(
 # --- Classes ---
 
 
+class BrandsGroup(collections.abc.Mapping):
+    """Represents a group of radio brands, loaded from a radios.json file."""
+
+    def __init__(self, file_path):
+        self._brands = {}
+        self.path = file_path
+
+        with open(file_path, "r") as file:
+            brands: dict = json.load(file)
+        for key, branddata in brands.items():
+            with open(branddata, "r") as brandfile:
+                brandradios = json.load(brandfile)
+                self._brands[key] = brandradios
+
+    # Wrappers to implement dict-like functionality
+    def __len__(self):
+        return len(self._brands)
+
+    def __getitem__(self, key: str) -> dict:
+        return self._brands[key]
+
+    def __iter__(self):
+        return iter(self._brands)
+
+    # str(): Simply return what it would be for the underlaying dict
+    def __str__(self):
+        return str(self._brands)
+
 class ImageMetadata:
     """Represents the metadata of a single image."""
 
