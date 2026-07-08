@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Fixed
 - Readded unreleased header that's load bearing to changelogs not being broken.
+- Added a new `?radio` command to look up a radio's RigPix data.
 
 ## [3.0.0] - 2026-02-13
 ### Added
