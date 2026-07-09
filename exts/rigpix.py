@@ -56,7 +56,13 @@ class RigpixCog(commands.Cog):
             model_name = model_obj[0]
             model_link = model_obj[1]
         else:
-            return cmn.error_embed_factory(ctx, f"Could not find a RigPix entry for {brand} {model}.")
+            embed = Embed()
+            embed = cmn.embed_factory(ctx)
+            embed.title = "Failed to find RigPix entry"
+            embed.description = (
+                f"Could not find a RigPix entry for {brand} {model}."
+            )
+            return embed
 
         async with self.session.get(model_link) as resp:
                 if resp.status != 200:
