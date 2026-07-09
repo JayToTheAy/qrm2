@@ -18,7 +18,7 @@ description = """
 license = (
     "Québec Free and Open-Source Licence – Strong Reciprocity (LiLiQ-R+), version 1.1"
 )
-release = "3.0.0"
+release = "3.1.0"
 contributing = """
     Check out the [source on GitHub](https://github.com/JayToTheAy/qrm3). Contributions are welcome!
 
