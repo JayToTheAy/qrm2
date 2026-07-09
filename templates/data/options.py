@@ -47,10 +47,11 @@ exts = [
     "study",
     "tex",
     "time",
+    "rigpix",
 ]
 
 # URL to the resources
-resources_url = "https://qrmresources.miaow.io/resources/"
+resources_url = "https://qrmresources.ai5zk.net/resources/"
 
 # If True (default): when doing QRZ callsign lookups, show the nickname in place of the first name, if it exists
 # if False: use QRZ's default name format
