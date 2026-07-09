@@ -119,6 +119,7 @@ class BrandsGroup(collections.abc.Mapping):
     def __str__(self):
         return str(self._brands)
 
+
 class ImageMetadata:
     """Represents the metadata of a single image."""
 
@@ -207,7 +208,7 @@ class GlobalChannelConverter(commands.IDConverter):
 
 
 def embed_factory(
-    ctx: Union[commands.Context, discord.ApplicationContext]
+    ctx: Union[commands.Context, discord.ApplicationContext],
 ) -> discord.Embed:
     """Creates an embed with neutral colour and standard footer."""
     embed = discord.Embed(timestamp=datetime.now(timezone.utc), colour=colours.neutral)
