@@ -5,7 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Fixed
-- Readded unreleased header that's load bearing to changelogs not being broken.
+- Discombobulated the combobulator.
+
+## [3.1.0] - 2026-07-08
+- Added a new `?radio` command to look up a radio's RigPix data.
 
 ## [3.0.0] - 2026-02-13
 ### Added
@@ -274,7 +277,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## 1.0.0 - 2019-07-31 [YANKED]
 
 
-[Unreleased]: https://github.com/jaytotheay/qrm2/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/jaytotheay/qrm3/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/jaytotheay/qrm3/releases/tag/v3.1.0
 [3.0.0]: https://github.com/jaytotheay/qrm2/releases/tag/v3.0.0
 [2.9.2]: https://github.com/miaowware/qrm2/releases/tag/v2.9.2
 [2.9.1]: https://github.com/miaowware/qrm2/releases/tag/v2.9.1

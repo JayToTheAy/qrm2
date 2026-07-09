@@ -356,6 +356,7 @@ resource_versions = {
     "qcodes": "v1",
     "funetics": "v1",
     "latex_template": "v1",
+    "radios": "v1",
 }
 
 bot.qrm.rm = ResourcesManager(cmn.paths.resources, opt.resources_url, resource_versions)

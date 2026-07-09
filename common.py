@@ -94,6 +94,32 @@ paths = SimpleNamespace(
 # --- Classes ---
 
 
+class BrandsGroup(collections.abc.Mapping):
+    """Represents a group of radio brands, loaded from a radios.json file."""
+
+    def __init__(self, file_path):
+        self._brands: dict[str, dict[str, list]] = {}
+        self.path = file_path
+
+        with open(file_path, "r") as file:
+            brand_to_radios: dict[str, dict[str, list]] = json.load(file)
+            self._brands = brand_to_radios
+
+    # Wrappers to implement dict-like functionality
+    def __len__(self):
+        return len(self._brands)
+
+    def __getitem__(self, key: str) -> dict[str, list]:
+        return self._brands[key]
+
+    def __iter__(self):
+        return iter(self._brands)
+
+    # str(): Simply return what it would be for the underlaying dict
+    def __str__(self):
+        return str(self._brands)
+
+
 class ImageMetadata:
     """Represents the metadata of a single image."""
 
@@ -182,7 +208,7 @@ class GlobalChannelConverter(commands.IDConverter):
 
 
 def embed_factory(
-    ctx: Union[commands.Context, discord.ApplicationContext]
+    ctx: Union[commands.Context, discord.ApplicationContext],
 ) -> discord.Embed:
     """Creates an embed with neutral colour and standard footer."""
     embed = discord.Embed(timestamp=datetime.now(timezone.utc), colour=colours.neutral)
