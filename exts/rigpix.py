@@ -12,6 +12,7 @@ from discord.ext import commands
 
 from urllib.parse import urljoin
 from typing import Union
+import re
 from bs4 import BeautifulSoup
 
 import common as cmn
@@ -44,7 +45,18 @@ class RigpixCog(commands.Cog):
         await ctx.send(embed=embed)
 
     async def _rigpix_core(self, ctx: Union[ApplicationContext, commands.Context], brand: str = "", model: str = "") -> Embed:
-        model_link = self.radios[brand.lower()][model]
+        """Core logic for the rigpix command."""
+        # slugify-but-not-really the brand and model to match the keys in the radios dict
+        pattern = re.compile('[\\W_]+', re.UNICODE)
+        brand = re.sub(pattern, '', brand.lower())
+        model = re.sub(pattern, '', model.lower())
+
+        model_obj = self.radios.get(brand, {}).get(model)
+        if model_obj:
+            model_name = model_obj[0]
+            model_link = model_obj[1]
+        else:
+            return cmn.error_embed_factory(ctx, f"Could not find a RigPix entry for {brand} {model}.")
 
         async with self.session.get(model_link) as resp:
                 if resp.status != 200:
@@ -78,7 +90,7 @@ class RigpixCog(commands.Cog):
 
                 return create_embed(
                     ctx,
-                    model=model,
+                    model_name=model_name,
                     model_link=model_link,
                     image_url=image_url,
                     frequency_range=frequency_range,
@@ -94,7 +106,7 @@ class RigpixCog(commands.Cog):
 
 def create_embed(
     ctx: Union[ApplicationContext, commands.Context],
-    model: str | None,
+    model_name: str | None,
     model_link: str | None,
     image_url: str | None,
     frequency_range: str | None,
@@ -107,7 +119,7 @@ def create_embed(
 ) -> Embed:
     """Creates an embed for the model and its metadata."""
     embed = cmn.embed_factory(ctx)
-    embed.title = f"RigPix Data for {model}"
+    embed.title = f"RigPix Data for {model_name}"
     embed.colour = cmn.colours.good
     embed.url = model_link
     embed.thumbnail = image_url
@@ -116,8 +128,8 @@ def create_embed(
     embed.add_field(name="Power Consumption", value=power_consumption, inline=True)
     embed.add_field(name="Dimensions", value=dimensions, inline=True)
     embed.add_field(name="Weight", value=weight, inline=True)
-    embed.add_field(name="RF Power Output", value=rf_power_output, inline=True)
     embed.add_field(name="Manufactured", value=manufactured, inline=True)
+    embed.add_field(name="RF Power Output", value=rf_power_output, inline=True)
 
     return embed
 
