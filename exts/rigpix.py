@@ -85,7 +85,7 @@ class RigpixCog(commands.Cog):
             if len(images) > 4:
                 image = str(images[4])
                 image_url = urljoin(
-                    model_link, image[image.find("src=") + 5 : image.find('"/>')]
+                    model_link, image[image.find("src=") + 5: image.find('"/>')]
                 )
 
             specification_table = soup.find_all("table")[3]
