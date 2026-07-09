@@ -7,8 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Discombobulated the combobulator.
 
-## [3.1.0] - 2026-07-08
+## [3.1.1] - 2026-07-08
+### Added
 - Added a new `?radio` command to look up a radio's RigPix data.
+### Fixed
+- Fixed me breaking the changelog which broke the whole bot. 
+
+## [3.1.0] - 2026-07-08 [YANKED]
 
 ## [3.0.0] - 2026-02-13
 ### Added
@@ -277,7 +282,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## 1.0.0 - 2019-07-31 [YANKED]
 
 
-[Unreleased]: https://github.com/jaytotheay/qrm3/compare/v3.1.0...HEAD
+[Unreleased]: https://github.com/jaytotheay/qrm3/compare/v3.1.1...HEAD
+[3.1.1]: https://github.com/jaytotheay/qrm3/releases/tag/v3.1.1
 [3.1.0]: https://github.com/jaytotheay/qrm3/releases/tag/v3.1.0
 [3.0.0]: https://github.com/jaytotheay/qrm2/releases/tag/v3.0.0
 [2.9.2]: https://github.com/miaowware/qrm2/releases/tag/v2.9.2
