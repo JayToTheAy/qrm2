@@ -22,12 +22,12 @@ release = "3.0.0"
 contributing = """
     Check out the [source on GitHub](https://github.com/JayToTheAy/qrm3). Contributions are welcome!
 
-    All issues and requests related to resources (including maps, band charts, data) should be added in [miaowware/qrm-resources](https://github.com/miaowware/qrm-resources).
+    All issues and requests related to resources (including maps, band charts, data) should be added in [jaytotheay/qrm-resources](https://github.com/jaytotheay/qrm-resources).
     """
 issue_tracker = """
     Submit an issue on the [issue tracker](https://github.com/JayToTheAy/qrm3/issues)!
 
-    All issues and requests related to resources (including maps, band charts, data) should be added in [miaowware/qrm-resources](https://github.com/miaowware/qrm-resources/issues).
+    All issues and requests related to resources (including maps, band charts, data) should be added in [jaytotheay/qrm-resources](https://github.com/jaytotheay/qrm-resources/issues).
     """
 bot_server = ""
 donating = """"""
